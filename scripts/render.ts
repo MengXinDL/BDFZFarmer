@@ -1,3 +1,5 @@
+import { gamecvs } from "./sharedData";
+
 window.onload = function() {
     resize();
 }
@@ -17,7 +19,6 @@ function init(): void {
 }
 
 function resize(): void {
-    let gamecvs: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
 
     translation.x = translation.y = 0;
     translation.scale = 1;
@@ -37,5 +38,8 @@ function render(): void {
     ctx.translate(translation.x, translation.y);
     ctx.scale(translation.scale, translation.scale);
 
+
+
     ctx.restore();
 }
+
