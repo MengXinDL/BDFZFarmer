@@ -12,11 +12,19 @@ module.exports = {
         path: path.resolve(__dirname, 'dist')
     },
     resolve: {
-        extensions: ['.ts', '.js']
+        extensions: ['.ts', '.js'],
     },
     module: {
         rules: [
-            { test: /\.ts$/, loader: 'ts-loader' }
+            { 
+                test: /\.ts$/,
+                exclude: /node_modules/,
+                use: [
+                    {
+                        loader: 'ts-loader',
+                    }
+                ]
+            }
         ]
     }
 }

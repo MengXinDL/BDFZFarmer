@@ -1,3 +1,5 @@
+import Noise from 'noisejs'
+
 export class box {
     x: number;
     y: number;
@@ -18,10 +20,13 @@ export class box {
 }
 // export const gamecvs: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
 // export let boxs: box[] = [];
+
 export const data: {
     gamecvs: HTMLCanvasElement,
     boxs: box[],
+    perlin: (x: number, y: number) => number,
 } = {
     gamecvs: document.getElementById('game') as HTMLCanvasElement,
-    boxs: []
+    boxs: [],
+    perlin: new Noise(Math.random()).perlin2,
 };
