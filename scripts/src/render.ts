@@ -17,6 +17,7 @@ const translation: {x: number, y: number, scale: number} = {
 
 function init(): void {
     let ctx = data.gamecvs.getContext('2d');
+    data.boxs.push(new box(0, 0, 100, 100, 'red'));
 }
 
 function resize(): void {
