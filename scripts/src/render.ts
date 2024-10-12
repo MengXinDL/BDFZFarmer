@@ -1,6 +1,8 @@
-import { box, boxs, gamecvs } from "./sharedData";
+import { box, data } from "./sharedData";
 
 window.onload = function() {
+    data.gamecvs = document.getElementById('game') as HTMLCanvasElement;
+    init();
     resize();
 }
 window.onresize = function() {
@@ -14,26 +16,26 @@ const translation: {x: number, y: number, scale: number} = {
 };
 
 function init(): void {
-    let ctx = gamecvs.getContext('2d');
+    let ctx = data.gamecvs.getContext('2d');
 }
 
 function resize(): void {
     translation.x = translation.y = 0;
     translation.scale = 1;
-    gamecvs.width = window.innerWidth;
-    gamecvs.height = window.innerHeight;
+    data.gamecvs.width = window.innerWidth;
+    data.gamecvs.height = window.innerHeight;
 }
 
 function render(): void {
-    let ctx: CanvasRenderingContext2D = gamecvs.getContext('2d') as CanvasRenderingContext2D;
-    let w: number = gamecvs.width, h: number = gamecvs.height;
+    let ctx: CanvasRenderingContext2D = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
+    let w: number = data.gamecvs.width, h: number = data.gamecvs.height;
 
     ctx.clearRect(0, 0, w, h);
     ctx.save();
     
     ctx.translate(translation.x, translation.y);
     ctx.scale(translation.scale, translation.scale);
-    boxs.forEach((b: box) => {
+    data.boxs.forEach((b: box) => {
         console.log(1);
         ctx.fillStyle = b.color;
         ctx.fillRect(b.x, b.y, b.width, b.height);
