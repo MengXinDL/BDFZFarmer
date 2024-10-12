@@ -3,11 +3,9 @@ import { box, data } from "./sharedData";
 window.onload = function() {
     data.gamecvs = document.getElementById('game') as HTMLCanvasElement;
     init();
-    render();
     resize();
 }
 window.onresize = function() {
-    render();
     resize();
 }
 
@@ -19,7 +17,7 @@ const translation: {x: number, y: number, scale: number} = {
 
 function init(): void {
     let ctx = data.gamecvs.getContext('2d');
-    data.boxs.push(new box(0, 0, 100, 100, 'red'));
+    data.boxs.push(new box(100, 100, 100, 100, 'red'));
 }
 
 function resize(): void {
@@ -27,23 +25,27 @@ function resize(): void {
     translation.scale = 1;
     data.gamecvs.width = window.innerWidth;
     data.gamecvs.height = window.innerHeight;
+    render();
 }
 
 function render(): void {
     let ctx: CanvasRenderingContext2D = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
     let w: number = data.gamecvs.width, h: number = data.gamecvs.height;
 
-    ctx.clearRect(0, 0, w, h);
-    ctx.save();
+    // ctx.clearRect(0, 0, w, h);
+    // ctx.save();
     
-    ctx.translate(translation.x, translation.y);
-    ctx.scale(translation.scale, translation.scale);
+    // ctx.translate(translation.x, translation.y);
+    // ctx.scale(translation.scale, translation.scale);
     data.boxs.forEach((b: box) => {
-        console.log(1);
+        if(ctx === null) {
+            return;
+        }
         ctx.fillStyle = b.color;
         ctx.fillRect(b.x, b.y, b.width, b.height);
+        console.log(b, ctx.fillStyle, ctx.fillRect(b.x, b.y, b.width, b.height));
     })
 
-    ctx.restore();
+    // ctx.restore();
 }
 

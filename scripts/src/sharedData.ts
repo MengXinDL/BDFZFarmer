@@ -20,8 +20,8 @@ export class box {
 // export let boxs: box[] = [];
 export const data: {
     gamecvs: HTMLCanvasElement,
-    boxs: box[]
+    boxs: box[],
 } = {
     gamecvs: document.getElementById('game') as HTMLCanvasElement,
-    boxs: [],
+    boxs: []
 };
