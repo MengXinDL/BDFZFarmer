@@ -3,9 +3,11 @@ import { box, data } from "./sharedData";
 window.onload = function() {
     data.gamecvs = document.getElementById('game') as HTMLCanvasElement;
     init();
+    render();
     resize();
 }
 window.onresize = function() {
+    render();
     resize();
 }
 
