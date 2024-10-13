@@ -2,6 +2,8 @@ class eventDetector {
     private _move: ((x: number, y: number) => void)[];
     private _click: ((x: number, y: number) => void)[];
     pressed = false;
+    private startX = 0;
+    private startY = 0;
     constructor() {
         this._move = [];
         this._click = [];
@@ -25,15 +27,23 @@ class eventDetector {
         });
 
 
+        //To support touch events
         document.addEventListener('touchmove', (e: TouchEvent) => {
             this._move.forEach((callback: (x: number, y: number) => void) => {
-                callback(e.touches[0].clientX, e.touches[0].clientY);
+                callback(this.startX - e.touches[0].clientX, this.startY - e.touches[0].clientY);
             })
         });
         document.addEventListener('touchstart', (e: TouchEvent) => {
+            this.startX = e.touches[0].clientX;
+            this.startY = e.touches[0].clientY;
             this.pressed = true;
         });
         document.addEventListener('touchend', (e: TouchEvent) => {
+            if (Math.abs(e.changedTouches[0].clientX - this.startX) < 5 && Math.abs(e.changedTouches[0].clientY - this.startY) < 5) {
+                this._click.forEach((callback: (x: number, y: number) => void) => {
+                    callback(e.touches[0].clientX, e.touches[0].clientY);
+                })
+            }
             this.pressed = false;
         });
     }
