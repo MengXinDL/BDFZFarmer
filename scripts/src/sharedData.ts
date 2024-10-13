@@ -24,9 +24,9 @@ export class box {
 export const data: {
     gamecvs: HTMLCanvasElement,
     boxs: box[],
-    perlin: (x: number, y: number) => number,
+    noise: Noise,
 } = {
     gamecvs: document.getElementById('game') as HTMLCanvasElement,
     boxs: [],
-    perlin: new Noise(Math.random()).perlin2,
+    noise: new window.Noise(Math.random()),
 };

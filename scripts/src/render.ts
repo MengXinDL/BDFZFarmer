@@ -26,10 +26,11 @@ function init(): void {
     const basicColor = {r: 255, g: 255, b: 255};
 
     let l = translation.scale * 50;
-    console.log(data.perlin(1,1), data.perlin(1,1.0000000001));
+    console.log(data.noise.perlin2(1,1), data.noise.perlin2(1,1.0000000001));
     for(let x = 0; x < data.gamecvs.width; x += l) {
         for(let y = 0; y < data.gamecvs.height; y += l) {
-            let rand = data.perlin(x / (l << 10), y / (l << 10));
+            let rand = data.noise.perlin2(x / Math.PI / l, y / Math.PI / l);
+            rand = (rand + 1) / 2;
             data.boxs.push(
                 new box(x+1, y+1, l-2, l-2, 
                     rgbtohex(
