@@ -24,7 +24,7 @@ export class box {
             return;
         }
         ctx.fillStyle = this.color;
-        ctx.fillRect(this.x, this.y, this.width, this.height);
+        ctx.fillRect(this.x + 1, this.y + 1, this.width - 1, this.height - 1);
     }
 }
 
@@ -43,8 +43,8 @@ export class field {
         this.fertility = fertility;
         this.basicColor = "#ffb400";
         this.box = new box(
-            (x + translation.x) * 50,
-            (y + translation.y) * 50,
+            (x * 50 + translation.x) * translation.scale,
+            (y * 50 + translation.y) * translation.scale,
             translation.scale * 50,
             translation.scale * 50,
             rgbtohex(
@@ -74,8 +74,7 @@ export const data: {
     seed: Math.random(),
     noise: new window.Noise,
 };
-data.noise = new window.Noise(Math.random());
-
+data.noise = new window.Noise(data.seed)
 export const translation: {x: number, y: number, scale: number} = {
     x: 0,
     y: 0,

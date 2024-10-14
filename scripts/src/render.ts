@@ -19,6 +19,21 @@ window.onresize = function() {
 
 
 
+function initFields(){
+    data.fields = [];
+    let l = translation.scale * 50;
+    let r = 1 / Math.PI / 2;
+    for(let x = -1; x * l < data.gamecvs.width; x += 1) {
+        for(let y = -1; y * l < data.gamecvs.height; y += 1) {
+            let x1 = x - Math.floor(translation.x / l);
+            let y1 = y - Math.floor(translation.y / l);
+            let rand = data.noise.perlin2(x1 * r, y1 * r);
+            rand = (rand + 1) / 2;
+            data.fields.push(new field(x1, y1, rand));
+        }
+    }
+}
+
 /**
  * Initializes the game. Called once when the page is loaded. Sets up the
  * canvas, sets the initial state of the game, and draws the initial frame.
@@ -38,17 +53,7 @@ function init(): void {
         return;
     }
 
-    let l = translation.scale * 50;
-    let r = 1 / Math.PI / 2;
-    console.log(data.noise.perlin2(1,1), data.noise.perlin2(1,1.0000000001));
-    for(let x = 0; x < data.gamecvs.width / l; x += 1) {
-        for(let y = 0; y < data.gamecvs.height / l; y += 1) {
-            let rand = data.noise.perlin2(x * r, y * r);
-            rand = (rand + 1) / 2;
-            data.fields.push(new field(x, y, rand));
-        }
-    }
-    console.log(data);
+    initFields();
 
     render();
 
@@ -60,6 +65,8 @@ function resize(): void {
     translation.scale = 1;
     data.gamecvs.width = window.innerWidth;
     data.gamecvs.height = window.innerHeight;
+
+    initFields();
 
     render();
 }
@@ -74,19 +81,12 @@ function render(): void {
     let w: number = data.gamecvs.width, h: number = data.gamecvs.height;
 
     ctx.clearRect(0, 0, w, h);
-    ctx.save();
-    
-    ctx.translate(translation.x, translation.y);
-    ctx.scale(translation.scale, translation.scale);
 
     ctx.fillStyle = '#539e3b';
     ctx.fillRect(0, 0, w, h);
 
-    data.fields.forEach((f: field) => {
-        f.render();
-    })
+    data.fields.forEach(f => f.render());
 
-    ctx.restore();
 }
 
 interact.move = (x: number, y: number) => {
@@ -95,5 +95,6 @@ interact.move = (x: number, y: number) => {
     }
     translation.x += x;
     translation.y += y;
+    initFields();
     render();
 }

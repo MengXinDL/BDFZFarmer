@@ -29,8 +29,12 @@ class eventDetector {
 
         //To support touch events
         document.addEventListener('touchmove', (e: TouchEvent) => {
+            let x = e.touches[0].clientX - this.startX;
+            let y = e.touches[0].clientY - this.startY;
+            this.startX = e.touches[0].clientX;
+            this.startY = e.touches[0].clientY;  
             this._move.forEach((callback: (x: number, y: number) => void) => {
-                callback(e.touches[0].clientX - this.startX, e.touches[0].clientY - this.startY);
+                callback(x, y);
             })
         });
         document.addEventListener('touchstart', (e: TouchEvent) => {
