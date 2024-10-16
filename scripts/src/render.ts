@@ -1,7 +1,8 @@
 import {
     box, data,
     translation, field,
-    hextorgb, rgbtohex
+    hextorgb, rgbtohex,
+    save
 } from "./sharedData";
 import { interact } from "./interact";
 
@@ -89,12 +90,47 @@ function render(): void {
 
 }
 
+function calcFertility(x: number, y: number, l?: number, r?: number): number {
+    l = l || translation.scale * 50;
+    r = r || 1 / Math.PI / 2;
+    let x1 = x - Math.floor(translation.x / l);
+    let y1 = y - Math.floor(translation.y / l);
+    let rand = data.noise.perlin2(x1 * r, y1 * r);
+    rand = (rand + 1) / 2;
+    return rand;
+}
+
+
+
+
 interact.move = (x: number, y: number) => {
     if(!interact.pressed){
         return;
     }
+    if(!interact.pressedElement || interact.pressedElement !== data.gamecvs){
+        return;
+    }
     translation.x += x;
     translation.y += y;
+    initFields();
+    render();
+}
+
+interact.click = (x: number, y: number) => {
+    if(!interact.pressedElement || interact.pressedElement !== data.gamecvs){
+        return;
+    }
+    let x1 = Math.floor((x - translation.x) / translation.scale / 50);
+    let y1 = Math.floor((y - translation.y) / translation.scale / 50);
+    if(save.fields.some(f => f.x === x1 && f.y === y1)){
+        return;
+    }
+    save.fields.push({
+        x: x1,
+        y: y1,
+        fertility: calcFertility(x1, y1),
+    });
+    console.log(save);
     initFields();
     render();
 }

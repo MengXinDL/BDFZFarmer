@@ -34,24 +34,31 @@ export class field {
     fertility: number;
     box: box;
     basicColor: string;
+    unlocked: boolean = false;
     constructor(
         x: number, y: number,
         fertility: number,
+        unlocked: boolean = false
     ){
         this.x = x;
         this.y = y;
         this.fertility = fertility;
         this.basicColor = "#ffb400";
+        let f = save.fields.find(f => f.x === x && f.y === y);
+        if(f !== undefined) {
+            this.fertility = f.fertility;
+            this.unlocked = true;
+        }
         this.box = new box(
             (x * 50 + translation.x) * translation.scale,
             (y * 50 + translation.y) * translation.scale,
             translation.scale * 50,
             translation.scale * 50,
-            rgbtohex(
+            this.unlocked ? rgbtohex(
                 parseInt(this.basicColor.slice(1,3), 16) * this.fertility,
                 parseInt(this.basicColor.slice(3,5), 16) * this.fertility,
                 parseInt(this.basicColor.slice(5,7), 16) * this.fertility
-            )
+            ) : "#0000007f"
         );
     }
     render() {
@@ -62,6 +69,18 @@ export class field {
 
 // export const gamecvs: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
 // export let boxs: box[] = [];
+
+interface savedFieldsData {
+    x: number,
+    y: number,
+    fertility: number,
+}
+
+export const save: {
+    fields: savedFieldsData[],
+} = {
+    fields: [],
+}
 
 export const data: {
     gamecvs: HTMLCanvasElement,
