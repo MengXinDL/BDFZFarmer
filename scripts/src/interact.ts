@@ -1,6 +1,7 @@
 class eventDetector {
     private _move: ((x: number, y: number) => void)[];
     private _click: ((x: number, y: number) => void)[];
+    private _scroll: ((delta: number, altKey: boolean) => void)[];
 
     pressed = false;
     pressedElement: HTMLElement | null = null;
@@ -12,6 +13,7 @@ class eventDetector {
     constructor() {
         this._move = [];
         this._click = [];
+        this._scroll = [];
 
 
         document.addEventListener('mousemove', (e: MouseEvent) => {
@@ -36,6 +38,13 @@ class eventDetector {
             this.pressedElement = null;
             this.pressed = false;
         });
+
+        //Idea from GaoKai
+        document.addEventListener('wheel', (e: WheelEvent) => {
+            this._scroll.forEach((callback: (delta: number, altKey: boolean) => void) => {
+                callback(e.deltaY, e.altKey);
+            })
+        })
 
 
         //To support touch events
@@ -73,6 +82,9 @@ class eventDetector {
     }
     set click(callback: (x: number, y: number) => void) {
         this._click.push(callback);
+    }
+    set scroll(callback: (delta: number, altKey: boolean) => void) {
+        this._scroll.push(callback);
     }
 }
 

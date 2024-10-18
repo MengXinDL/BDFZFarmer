@@ -34,15 +34,20 @@ export class box {
         if (ctx === null) {
             return;
         }
-        ctx.fillStyle = this.color;
-        ctx.fillRect(this.x + 1, this.y + 1, this.width - 1, this.height - 1);
 
+        ctx.fillStyle = this.color;
+        if(translation.scale > 0.5)ctx.fillRect(this.x + 1, this.y + 1, this.width - 1, this.height - 1);
+        else ctx.fillRect(this.x, this.y, this.width, this.height);
+
+        if(this.innerText === "") {
+            return;
+        }
         const textLines = this.innerText.split('\n');
         const lineHeight = parseInt(ctx.font, 10);
         const totalHeight = textLines.length * lineHeight;
         const textWidths = textLines.map(line => ctx.measureText(line).width);
         const y = (this.height / 2) - (totalHeight / 2) + lineHeight;
-        ctx.fillStyle = "#ffffff";
+        ctx.fillStyle = this.color === "#ffffff" ? "#000000" : "#ffffff";
         textLines.forEach((line, index) => {
             ctx.fillText(
                 line,
@@ -91,15 +96,17 @@ export class field {
             }
         }
         let txt = "";
-        if(this.unlocked) {
-            txt =
+        if(translation.scale > 0.5){
+            if(this.unlocked) {
+                txt =
 `(${this.x}, ${this.y})
 肥沃度${(this.fertility * 100).toFixed(0)}`;
-        }else if(this.canBuy) {
-            txt =
+            }else if(this.canBuy) {
+                txt =
 `(${this.x}, ${this.y})
 肥沃度${(this.fertility * 100).toFixed(0)}
 花费${field.calcMoney(this)}`;
+            }
         }
         this.box = new box(
             x * 50 * translation.scale + translation.x,
@@ -111,6 +118,10 @@ export class field {
         );
     }
     render() {
+        if(
+            !this.canBuy && !this.unlocked &&
+            translation.scale < 0.5
+        ) return;
         this.box.render();
     }
     color() {
@@ -146,22 +157,22 @@ interface savedFieldsData {
 
 export const save: {
     fields: savedFieldsData[],
-    money: number
+    money: number,
+    seed: number
 } = {
     fields: [],
     money: 0,
+    seed: Math.floor(Math.random() * 1000000000),
 }
 
 export const data: {
     gamecvs: HTMLCanvasElement,
     fields: field[],
-    seed: number,
     noise: Noise,
     around: [number, number][],
 } = {
     gamecvs: document.getElementById('game') as HTMLCanvasElement,
     fields: [],
-    seed: Math.random(),
     noise: new window.Noise,
     around: [
         [-1, -1],
@@ -174,7 +185,9 @@ export const data: {
         [1, 1]
     ],
 };
-data.noise = new window.Noise(data.seed)
+data.noise = new window.Noise(save.seed)
+console.log(save.seed);
+
 export const translation: { x: number, y: number, scale: number } = {
     x: 0,
     y: 0,

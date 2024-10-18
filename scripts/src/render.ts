@@ -89,7 +89,8 @@ function render(): void {
 
     ctx.clearRect(0, 0, w, h);
 
-    ctx.fillStyle = '#539e3b';
+    if(translation.scale > 0.5)ctx.fillStyle = '#539e3b';
+    else ctx.fillStyle = '#294f1d';
     ctx.fillRect(0, 0, w, h);
     
     ctx.font = `${10 * translation.scale}px sans-serif`;
@@ -122,7 +123,18 @@ interact.move = (x: number, y: number) => {
     render();
 }
 
+interact.scroll = (delta: number) => {
+    let r = 1 + delta / 100;
+    translation.scale *= r;
+    translation.scale = Math.max(0.1, translation.scale);
+    translation.scale = Math.min(10, translation.scale);
+    initFields();
+    render();
+}
+
 interact.click = (x: number, y: number) => {
+    if(translation.scale < 0.5)return;
+
     if(!interact.pressedElement || interact.pressedElement !== data.gamecvs){
         return;
     }
