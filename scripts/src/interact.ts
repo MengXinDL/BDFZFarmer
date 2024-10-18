@@ -5,6 +5,8 @@ class eventDetector {
     pressed = false;
     pressedElement: HTMLElement | null = null;
 
+    private lastX = 0;
+    private lastY = 0;
     private startX = 0;
     private startY = 0;
     constructor() {
@@ -31,7 +33,7 @@ class eventDetector {
         document.addEventListener('mouseup', (e: MouseEvent) => {
             let x = e.offsetX - this.startX;
             let y = e.offsetY - this.startY;
-            if (Math.abs(x) < 5 && Math.abs(x) < 5) {
+            if (Math.abs(x) < 5 && Math.abs(y) < 5) {
                 this._click.forEach((callback: (x: number, y: number) => void) => {
                     callback(e.offsetX, e.offsetY);
                 })
@@ -43,15 +45,17 @@ class eventDetector {
 
         //To support touch events
         document.addEventListener('touchmove', (e: TouchEvent) => {
-            let x = e.touches[0].clientX - this.startX;
-            let y = e.touches[0].clientY - this.startY;
-            this.startX = e.touches[0].clientX;
-            this.startY = e.touches[0].clientY;
+            let x = e.touches[0].clientX - this.lastX;
+            let y = e.touches[0].clientY - this.lastY;
+            this.lastX = e.touches[0].clientX;
+            this.lastY = e.touches[0].clientY;
             this._move.forEach((callback: (x: number, y: number) => void) => {
                 callback(x, y);
             })
         });
         document.addEventListener('touchstart', (e: TouchEvent) => {
+            this.lastX = e.touches[0].clientX;
+            this.lastY = e.touches[0].clientY;
             this.startX = e.touches[0].clientX;
             this.startY = e.touches[0].clientY;
             this.pressedElement = e.target as HTMLElement;
@@ -62,7 +66,7 @@ class eventDetector {
             let y = e.changedTouches[0].clientY - this.startY;
             if (Math.abs(x) < 5 && Math.abs(y) < 5) {
                 this._click.forEach((callback: (x: number, y: number) => void) => {
-                    callback(x + this.startX, y + this.startY);
+                    callback(x + this.lastX, y + this.lastY);
                 })
             }
             this.pressedElement = null;

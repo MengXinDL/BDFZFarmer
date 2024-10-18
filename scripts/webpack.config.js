@@ -28,6 +28,7 @@ module.exports = {
         ]
     },
     externals: {
-        'noisejs': 'noisejs'
+        'noisejs': 'noisejs',
+        'events': 'events'
     }
 }

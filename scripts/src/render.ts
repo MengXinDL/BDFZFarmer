@@ -10,10 +10,10 @@ import { interact } from "./interact";
  * Called when the page is loaded. Initializes the canvas and calls
  * {@link init} to set up the canvas and draw the initial frame.
  */
-window.onload = function() {
+addEventListener('load', function() {
     data.gamecvs = document.getElementById('game') as HTMLCanvasElement;
     init();
-}
+});
 window.onresize = function() {
     resize();
 }
@@ -41,12 +41,20 @@ function initFields(){
  */
 function init(): void {
 
-    translation.x = translation.y = 0;
-    translation.scale = 1;
+    translation.x = window.innerWidth / 2;
+    translation.y = window.innerHeight / 2;
+    translation.scale = 2;
     data.gamecvs.width = window.innerWidth;
     data.gamecvs.height = window.innerHeight;
+    
+    const ctx = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
+    ctx.font = `${10 * translation.scale}px sans-serif`;
 
-    let ctx = data.gamecvs.getContext('2d');
+    save.fields.push({
+        x: 0,
+        y: 0,
+        fertility: calcFertility(0, 0),
+    });
 
     const basicColor = hextorgb('#ffb400');
     if(basicColor === null) {
@@ -62,8 +70,6 @@ function init(): void {
 
 
 function resize(): void {
-    translation.x = translation.y = 0;
-    translation.scale = 1;
     data.gamecvs.width = window.innerWidth;
     data.gamecvs.height = window.innerHeight;
 
@@ -78,7 +84,7 @@ function resize(): void {
  * the current translation and scale, and draws all the boxes in the game.
  */
 function render(): void {
-    let ctx: CanvasRenderingContext2D = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
+    const ctx: CanvasRenderingContext2D = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
     let w: number = data.gamecvs.width, h: number = data.gamecvs.height;
 
     ctx.clearRect(0, 0, w, h);
@@ -87,15 +93,15 @@ function render(): void {
     ctx.fillRect(0, 0, w, h);
 
     data.fields.forEach(f => f.render());
+    
+    ctx.font = `${10 * translation.scale}px sans-serif`;
 
 }
 
 function calcFertility(x: number, y: number, l?: number, r?: number): number {
     l = l || translation.scale * 50;
     r = r || 1 / Math.PI / 2;
-    let x1 = x - Math.floor(translation.x / l);
-    let y1 = y - Math.floor(translation.y / l);
-    let rand = data.noise.perlin2(x1 * r, y1 * r);
+    let rand = data.noise.perlin2(x * r, y * r);
     rand = (rand + 1) / 2;
     return rand;
 }
@@ -120,17 +126,34 @@ interact.click = (x: number, y: number) => {
     if(!interact.pressedElement || interact.pressedElement !== data.gamecvs){
         return;
     }
+
     let x1 = Math.floor((x - translation.x) / translation.scale / 50);
     let y1 = Math.floor((y - translation.y) / translation.scale / 50);
+
     if(save.fields.some(f => f.x === x1 && f.y === y1)){
         return;
     }
+
+    let f = data.fields.find(f => f.x === x1 && f.y === y1);
+    if(!f || !f.canBuy){
+        return;
+    }
+    if(field.calcMoney(f) > save.money){
+        alert(
+`你钱不够
+需要${field.calcMoney(f)}
+但你只有${save.money.toFixed(2)}
+`
+        );
+        return;
+    }
+    save.money -= field.calcMoney(f);
+    
     save.fields.push({
         x: x1,
         y: y1,
         fertility: calcFertility(x1, y1),
     });
-    console.log(save);
     initFields();
     render();
 }
