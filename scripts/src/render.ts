@@ -91,10 +91,10 @@ function render(): void {
 
     ctx.fillStyle = '#539e3b';
     ctx.fillRect(0, 0, w, h);
-
-    data.fields.forEach(f => f.render());
     
     ctx.font = `${10 * translation.scale}px sans-serif`;
+
+    data.fields.forEach(f => f.render());
 
 }
 

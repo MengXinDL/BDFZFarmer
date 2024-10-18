@@ -19,11 +19,6 @@ class eventDetector {
                 callback(e.movementX, e.movementY);
             })
         });
-        document.addEventListener('click', (e: MouseEvent) => {
-            this._click.forEach((callback: (x: number, y: number) => void) => {
-                callback(e.offsetX, e.offsetY);
-            })
-        });
         document.addEventListener('mousedown', (e: MouseEvent) => {
             this.startX = e.offsetX;
             this.startY = e.offsetY;
