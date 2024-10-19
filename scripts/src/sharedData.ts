@@ -1,7 +1,8 @@
 import Noise from 'noisejs'
+import exports from 'webpack';
 
 
-enum fieldColor {
+enum FieldColor {
     "#ffffff",
     "#d1a20a",
     "#a35d1d",
@@ -58,7 +59,7 @@ export class box {
     }
 }
 
-export class field {
+export class Field {
     x: number;
     y: number;
     fertility: number;
@@ -77,7 +78,7 @@ export class field {
         this.basicColor = "#ffb400";
         let f = save.fields.find(f => f.x === x && f.y === y);
         if (f !== undefined) {
-            this.fertility = f.fertility;
+            this.fertility = calcFertility(f);
             this.unlocked = true;
         }
         if (f === undefined) {
@@ -105,7 +106,7 @@ export class field {
                 txt =
 `(${this.x}, ${this.y})
 肥沃度${(this.fertility * 100).toFixed(0)}
-花费${field.calcMoney(this)}`;
+花费${Field.calcMoney(this)}`;
             }
         }
         this.box = new box(
@@ -126,14 +127,14 @@ export class field {
     }
     color() {
         return this.unlocked ?
-            fieldColor[
+            FieldColor[
             Math.floor(this.fertility * 5)
             ]
             : (this.canBuy ? "#7f7f7f7f" : "#0000007f");
     }
-    static calcMoney(f: number | field,x?: number, y?: number): number {
+    static calcMoney(f: number | Field,x?: number, y?: number): number {
         if(typeof f !== "number"){
-            return field.calcMoney(f.fertility, f.x, f.y);
+            return Field.calcMoney(f.fertility, f.x, f.y);
         }
         if(x === undefined || y === undefined){
             throw new Error("x or y is undefined when calcMoney");
@@ -149,14 +150,14 @@ export class field {
 // export const gamecvs: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
 // export let boxs: box[] = [];
 
-interface savedFieldsData {
+interface SavedFieldsData {
     x: number,
     y: number,
-    fertility: number,
+    crop: number
 }
 
 export const save: {
-    fields: savedFieldsData[],
+    fields: SavedFieldsData[],
     money: number,
     seed: number
 } = {
@@ -167,7 +168,7 @@ export const save: {
 
 export const data: {
     gamecvs: HTMLCanvasElement,
-    fields: field[],
+    fields: Field[],
     noise: Noise,
     around: [number, number][],
 } = {
@@ -212,4 +213,24 @@ export function rgbtohex(r: number, g: number, b: number): string {
         Math.floor(b)
     ).toString(16).slice(1);
     return '#' + hex;
+}
+
+export function calcFertility(f: Field): number;
+export function calcFertility(x: number, y: number): number;
+export function calcFertility(f: SavedFieldsData): number
+export function calcFertility(x: number | SavedFieldsData | Field, y?: number): number {
+    let l = translation.scale * 50;
+    let r = 1 / Math.PI / 2;
+    if(typeof x === "number"){
+        if(y === undefined) return 0;
+        let rand = data.noise.perlin2(x * r, y * r);
+        rand = (rand + 1) / 2;
+        return rand;
+    }else{
+        return 'fertility' in x ? x.fertility : calcFertility(x.x, x.y);
+    }
+}
+
+export enum Crops {
+    corn,
 }

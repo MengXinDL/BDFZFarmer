@@ -1,6 +1,6 @@
 import {
     box, data,
-    translation, field,
+    translation, Field,
     hextorgb, rgbtohex,
     save
 } from "./sharedData";
@@ -20,7 +20,7 @@ window.onresize = function() {
 
 
 
-function initFields(){
+export function initFields(){
     data.fields = [];
     let l = translation.scale * 50;
     let r = 1 / Math.PI / 2;
@@ -30,7 +30,7 @@ function initFields(){
             let y1 = y - Math.floor(translation.y / l);
             let rand = data.noise.perlin2(x1 * r, y1 * r);
             rand = (rand + 1) / 2;
-            data.fields.push(new field(x1, y1, rand));
+            data.fields.push(new Field(x1, y1, rand));
         }
     }
 }
@@ -53,7 +53,7 @@ function init(): void {
     save.fields.push({
         x: 0,
         y: 0,
-        fertility: calcFertility(0, 0),
+        crop: 0,
     });
 
     const basicColor = hextorgb('#ffb400');
@@ -83,7 +83,7 @@ function resize(): void {
  * once per frame. It clears the canvas, sets the transformation matrix to
  * the current translation and scale, and draws all the boxes in the game.
  */
-function render(): void {
+export function render(): void {
     const ctx: CanvasRenderingContext2D = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
     let w: number = data.gamecvs.width, h: number = data.gamecvs.height;
 
@@ -98,18 +98,6 @@ function render(): void {
     data.fields.forEach(f => f.render());
 
 }
-
-function calcFertility(x: number, y: number, l?: number, r?: number): number {
-    l = l || translation.scale * 50;
-    r = r || 1 / Math.PI / 2;
-    let rand = data.noise.perlin2(x * r, y * r);
-    rand = (rand + 1) / 2;
-    return rand;
-}
-
-
-
-
 interact.move = (x: number, y: number) => {
     if(!interact.pressed){
         return;
@@ -132,40 +120,3 @@ interact.scroll = (delta: number) => {
     render();
 }
 
-interact.click = (x: number, y: number) => {
-    if(translation.scale < 0.5)return;
-
-    if(!interact.pressedElement || interact.pressedElement !== data.gamecvs){
-        return;
-    }
-
-    let x1 = Math.floor((x - translation.x) / translation.scale / 50);
-    let y1 = Math.floor((y - translation.y) / translation.scale / 50);
-
-    if(save.fields.some(f => f.x === x1 && f.y === y1)){
-        return;
-    }
-
-    let f = data.fields.find(f => f.x === x1 && f.y === y1);
-    if(!f || !f.canBuy){
-        return;
-    }
-    if(field.calcMoney(f) > save.money){
-        alert(
-`你钱不够
-需要${field.calcMoney(f)}
-但你只有${save.money.toFixed(2)}
-`
-        );
-        return;
-    }
-    save.money -= field.calcMoney(f);
-    
-    save.fields.push({
-        x: x1,
-        y: y1,
-        fertility: calcFertility(x1, y1),
-    });
-    initFields();
-    render();
-}
