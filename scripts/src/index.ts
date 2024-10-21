@@ -1,6 +1,6 @@
 /**
  * @author TopologyJZ
- * @version 0.2.3
+ * @version 0.2.6
  * @description 测试版本
  */
 
@@ -124,3 +124,13 @@ addEventListener('load', () => {
         }
     }
 });
+
+
+setInterval(() => {
+    try {
+        let v = fetch('https://bdfzfarmer.top/statics/version.json').then(res => res.json());
+        console.log(v);
+    } catch (error) {
+
+    }
+}, 1 * 60000);

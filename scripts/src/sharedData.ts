@@ -99,14 +99,9 @@ export class Field {
         let txt = "";
         if(translation.scale > 0.5){
             if(this.unlocked) {
-                txt =
-`(${this.x}, ${this.y})
-肥沃度${(this.fertility * 100).toFixed(0)}`;
+                txt =`肥沃度${(this.fertility * 100).toFixed(0)}`;
             }else if(this.canBuy) {
-                txt =
-`(${this.x}, ${this.y})
-肥沃度${(this.fertility * 100).toFixed(0)}
-花费${Field.calcMoney(this)}`;
+                txt =`花费${Field.calcMoney(this)}`;
             }
         }
         this.box = new box(
