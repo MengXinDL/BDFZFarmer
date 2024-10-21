@@ -150,7 +150,7 @@ interface SavedFieldsData {
     crop: number
 }
 
-export const VERSION = '0.2.10';
+export const VERSION = '0.2.11';
 export const save: {
     fields: SavedFieldsData[],
     money: number,
@@ -236,4 +236,7 @@ export function base64(str: string): string {
 
 export function unbase64(str: string): string {
     return decodeURIComponent(escape(atob(str)));
+}
+export function parseData(data: object): object {
+    return data;
 }

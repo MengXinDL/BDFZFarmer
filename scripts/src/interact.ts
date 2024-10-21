@@ -45,7 +45,6 @@ class eventDetector {
             }
             this.pressedElement = null;
             this.pressed = false;
-            console.log('clicked')
         });
 
         //Idea from GaoKai

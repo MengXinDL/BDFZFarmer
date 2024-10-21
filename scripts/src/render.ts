@@ -2,7 +2,7 @@ import {
     box, data,
     translation, Field,
     hextorgb, rgbtohex,
-    save
+    save, parseData, base64, unbase64
 } from "./sharedData";
 import { interact } from "./interact";
 
@@ -50,11 +50,17 @@ function init(): void {
     const ctx = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
     ctx.font = `${10 * translation.scale}px sans-serif`;
 
-    save.fields.push({
-        x: 0,
-        y: 0,
-        crop: 0,
-    });
+    if(localStorage.getItem('save')){
+        let s = localStorage.getItem('save')!;
+        Object.assign(save, parseData(JSON.parse(unbase64(s))));
+        data.noise.seed(save.seed);
+    } else {
+        save.fields.push({
+            x: 0,
+            y: 0,
+            crop: 0,
+        });
+    }
 
     const basicColor = hextorgb('#ffb400');
     if(basicColor === null) {

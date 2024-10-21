@@ -1,7 +1,3 @@
-
-
-
-
 import {
     save,
     translation,
@@ -9,7 +5,7 @@ import {
     Field,
     calcFertility,
     Crops,
-    base64, unbase64,
+    base64, unbase64, parseData,
     VERSION
 } from "./sharedData";
 import { interact } from "./interact";
@@ -71,9 +67,7 @@ interact.click = (x: number, y: number) => {
     render();
 }
 
-function parseData(data: object): object {
-    return data;
-}
+
 
 addEventListener('load', () => {
     const s = document.getElementById('save');
@@ -142,3 +136,7 @@ setInterval(() => {
 
     }
 }, 1000 * 60);
+
+setInterval(() => {
+    localStorage.setItem('save', base64(JSON.stringify(save)));
+}, 10000);
