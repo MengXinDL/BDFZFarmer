@@ -154,11 +154,13 @@ interface SavedFieldsData {
 export const save: {
     fields: SavedFieldsData[],
     money: number,
-    seed: number
+    seed: number,
+    version: string
 } = {
     fields: [],
     money: 0,
     seed: Math.floor(Math.random() * 1000000000),
+    version: '0.2.8'
 }
 
 export const data: {

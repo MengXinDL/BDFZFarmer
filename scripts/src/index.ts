@@ -1,8 +1,4 @@
-/**
- * @author TopologyJZ
- * @version 0.2.6
- * @description 测试版本
- */
+
 
 
 
@@ -128,8 +124,12 @@ addEventListener('load', () => {
 
 setInterval(() => {
     try {
-        let v = fetch('https://bdfzfarmer.top/statics/version.json').then(res => res.json());
-        console.log(v);
+        let v = fetch('../statics/version.json').then(res => res.json());
+        v.then(v => {
+            if(v.version !== save.version){
+                alert(`有新版本了\n${v.details.join('\n')}\n建议保存并刷新`);
+            }
+        })
     } catch (error) {
 
     }

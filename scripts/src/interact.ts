@@ -17,8 +17,10 @@ class eventDetector {
 
 
         document.addEventListener('mousemove', (e: MouseEvent) => {
-            this._move.forEach((callback: (x: number, y: number) => void) => {
-                callback(e.movementX, e.movementY);
+            requestAnimationFrame(() => {
+                this._move.forEach((callback: (x: number, y: number) => void) => {
+                    callback(e.movementX, e.movementY);
+                })
             })
         });
         document.addEventListener('mousedown', (e: MouseEvent) => {
@@ -37,6 +39,7 @@ class eventDetector {
             }
             this.pressedElement = null;
             this.pressed = false;
+            console.log('clicked')
         });
 
         //Idea from GaoKai
@@ -53,9 +56,12 @@ class eventDetector {
             let y = e.touches[0].clientY - this.lastY;
             this.lastX = e.touches[0].clientX;
             this.lastY = e.touches[0].clientY;
-            this._move.forEach((callback: (x: number, y: number) => void) => {
-                callback(x, y);
-            })
+
+            requestAnimationFrame(() => {
+                this._move.forEach((callback: (x: number, y: number) => void) => {
+                    callback(x, y);
+                });
+            });
         });
         document.addEventListener('touchstart', (e: TouchEvent) => {
             this.lastX = e.touches[0].clientX;
@@ -66,13 +72,6 @@ class eventDetector {
             this.pressed = true;
         });
         document.addEventListener('touchend', (e: TouchEvent) => {
-            let x = e.changedTouches[0].clientX - this.startX;
-            let y = e.changedTouches[0].clientY - this.startY;
-            if (Math.abs(x) < 5 && Math.abs(y) < 5) {
-                this._click.forEach((callback: (x: number, y: number) => void) => {
-                    callback(x + this.lastX, y + this.lastY);
-                })
-            }
             this.pressedElement = null;
             this.pressed = false;
         });
