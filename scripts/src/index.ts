@@ -9,7 +9,8 @@ import {
     Field,
     calcFertility,
     Crops,
-    base64, unbase64
+    base64, unbase64,
+    VERSION
 } from "./sharedData";
 import { interact } from "./interact";
 import {
@@ -70,6 +71,10 @@ interact.click = (x: number, y: number) => {
     render();
 }
 
+function parseData(data: object): object {
+    return data;
+}
+
 addEventListener('load', () => {
     const s = document.getElementById('save');
     const l = document.getElementById('load');
@@ -85,7 +90,7 @@ addEventListener('load', () => {
             reader.onload = (e) => {
                 const content = e.target?.result as string;
                 try {
-                    Object.assign(save, JSON.parse(unbase64(content)));
+                    Object.assign(save, parseData(JSON.parse(unbase64(content))));
                     data.noise.seed(save.seed);
                     initFields();
                     render();
@@ -103,7 +108,9 @@ addEventListener('load', () => {
     })
     if(s && l){
         s.onclick = () => {
-            const content = base64(JSON.stringify(save));
+            let obj = JSON.parse(JSON.stringify(save));
+            obj.version = VERSION;
+            const content = base64(JSON.stringify(obj));
             const blob = new Blob([content], { type: 'text/plain' });
             const url = URL.createObjectURL(blob);
 
@@ -126,11 +133,12 @@ setInterval(() => {
     try {
         let v = fetch('../statics/version.json').then(res => res.json());
         v.then(v => {
-            if(v.version !== save.version){
+            console.log(v);
+            if(v.version !== VERSION){
                 alert(`有新版本了\n${v.details.join('\n')}\n建议保存并刷新`);
             }
         })
     } catch (error) {
 
     }
-}, 1 * 60000);
+}, 1000 * 60);

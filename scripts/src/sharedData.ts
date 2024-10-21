@@ -1,5 +1,4 @@
 import Noise from 'noisejs'
-import exports from 'webpack';
 
 
 enum FieldColor {
@@ -136,7 +135,7 @@ export class Field {
         }
         return Math.floor(
             (f + 1) *
-            (x ** 2 + y ** 2) ** 1.3
+            (x * x + y * y) ** 1.3
         );
     }
 }
@@ -151,16 +150,15 @@ interface SavedFieldsData {
     crop: number
 }
 
+export const VERSION = '0.2.10';
 export const save: {
     fields: SavedFieldsData[],
     money: number,
     seed: number,
-    version: string
 } = {
     fields: [],
     money: 0,
     seed: Math.floor(Math.random() * 1000000000),
-    version: '0.2.8'
 }
 
 export const data: {

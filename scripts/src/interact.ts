@@ -10,12 +10,18 @@ class eventDetector {
     private lastY = 0;
     private startX = 0;
     private startY = 0;
+    private startDistance = 0;
+    private lastDistance = 0;
     constructor() {
         this._move = [];
         this._click = [];
         this._scroll = [];
 
+        this.initMouse();
 
+        this.initTouch();
+    }
+    initMouse() {
         document.addEventListener('mousemove', (e: MouseEvent) => {
             requestAnimationFrame(() => {
                 this._move.forEach((callback: (x: number, y: number) => void) => {
@@ -48,8 +54,8 @@ class eventDetector {
                 callback(e.deltaY, e.altKey);
             })
         })
-
-
+    }
+    initTouch() {
         //To support touch events
         document.addEventListener('touchmove', (e: TouchEvent) => {
             let x = e.touches[0].clientX - this.lastX;
@@ -57,17 +63,34 @@ class eventDetector {
             this.lastX = e.touches[0].clientX;
             this.lastY = e.touches[0].clientY;
 
-            requestAnimationFrame(() => {
-                this._move.forEach((callback: (x: number, y: number) => void) => {
-                    callback(x, y);
+            let distance = this.getTouchDistance(e) - this.lastDistance;
+            this.lastDistance = this.getTouchDistance(e);
+
+
+            if(distance !== 0){
+                requestAnimationFrame(() => {
+                    this._scroll.forEach((callback: (delta: number, altKey: boolean) => void) => {
+                        callback(distance, false);
+                    })
+                })
+            }else{
+                requestAnimationFrame(() => {
+                    this._move.forEach((callback: (x: number, y: number) => void) => {
+                        callback(x, y);
+                    });
                 });
-            });
+            }
         });
         document.addEventListener('touchstart', (e: TouchEvent) => {
             this.lastX = e.touches[0].clientX;
             this.lastY = e.touches[0].clientY;
+
             this.startX = e.touches[0].clientX;
             this.startY = e.touches[0].clientY;
+
+            this.startDistance = this.getTouchDistance(e);
+            this.lastDistance = this.getTouchDistance(e);
+
             this.pressedElement = e.target as HTMLElement;
             this.pressed = true;
         });
@@ -75,6 +98,12 @@ class eventDetector {
             this.pressedElement = null;
             this.pressed = false;
         });
+    }
+    getTouchDistance(event: TouchEvent): number {
+        if (event.touches.length < 2) return 0;
+        const touch1 = event.touches[0];
+        const touch2 = event.touches[1];
+        return Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
     }
     set move(callback: (x: number, y: number) => void) {
         this._move.push(callback);
@@ -87,4 +116,4 @@ class eventDetector {
     }
 }
 
-export  const interact = new eventDetector();
+export const interact = new eventDetector();

@@ -40,7 +40,7 @@ p#money {
     border: 10px solid rgba(0, 0, 0, 0);
 }
 
-.save {
+.box-container {
     display: flex;
     justify-content: flex-start;
     left: 10px;
