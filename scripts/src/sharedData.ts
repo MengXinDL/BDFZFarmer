@@ -234,3 +234,11 @@ export function calcFertility(x: number | SavedFieldsData | Field, y?: number): 
 export enum Crops {
     corn,
 }
+
+export function base64(str: string): string {
+    return btoa(unescape(encodeURIComponent(str)));
+}
+
+export function unbase64(str: string): string {
+    return decodeURIComponent(escape(atob(str)));
+}

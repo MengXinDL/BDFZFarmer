@@ -7,6 +7,7 @@ body {
     overflow: hidden;
 }
 
+
 .container {
     position: relative;
 }
@@ -15,29 +16,33 @@ body {
     display: block;
     justify-content: center;
     align-items: center;
-    width: 100%;
-    height: 100%;
     position: absolute;
     left: 0;
     top: 0;
     z-index: -1;
 }
 
-.control {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    left: 0;
-    top: 0;
-    z-index: 999;
+p#money {
+    color: aliceblue;
 }
 
-p#money {
+.control-container {
+    width: 300px;
+    height: 100vh;
     position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: flex-start;
+    border: 10px solid rgba(0, 0, 0, 0);
+}
+
+.save {
+    display: flex;
+    justify-content: flex-start;
     left: 10px;
-    top: 10px;
-    color: aliceblue;
+    top: 10p;
 }
