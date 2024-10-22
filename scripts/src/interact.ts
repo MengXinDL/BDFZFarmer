@@ -65,19 +65,18 @@ class eventDetector {
             let distance = this.getTouchDistance(e) - this.lastDistance;
             this.lastDistance = this.getTouchDistance(e);
 
-
-            if(Math.abs(distance) < 5){
-                requestAnimationFrame(() => {
-                    this._scroll.forEach((callback: (delta: number, altKey: boolean) => void) => {
-                        callback(distance, false);
-                    })
-                })
-            }else{
+            if(isNaN(distance)){
                 requestAnimationFrame(() => {
                     this._move.forEach((callback: (x: number, y: number) => void) => {
                         callback(x, y);
                     });
                 });
+            }else if(Math.abs(distance) < 5){
+                requestAnimationFrame(() => {
+                    this._scroll.forEach((callback: (delta: number, altKey: boolean) => void) => {
+                        callback(distance, false);
+                    })
+                })
             }
         });
         document.addEventListener('touchstart', (e: TouchEvent) => {
@@ -99,7 +98,7 @@ class eventDetector {
         });
     }
     getTouchDistance(event: TouchEvent): number {
-        if (event.touches.length < 2) return 0;
+        if (event.touches.length < 2) return NaN;
         const touch1 = event.touches[0];
         const touch2 = event.touches[1];
         return Math.hypot(touch2.clientX - touch1.clientX, touch2.clientY - touch1.clientY);
