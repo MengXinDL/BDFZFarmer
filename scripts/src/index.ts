@@ -6,7 +6,7 @@ import {
     calcFertility,
     Crops,
     base64, unbase64, parseData,
-    VERSION
+    VERSION,
 } from "./sharedData";
 import { interact } from "./interact";
 import {
@@ -140,3 +140,14 @@ setInterval(() => {
 setInterval(() => {
     localStorage.setItem('save', base64(JSON.stringify(save)));
 }, 10000);
+
+addEventListener('load', () => {
+    let home = document.getElementById('home') as HTMLButtonElement;
+    home.onclick = () => {
+        translation.scale = 2;
+        translation.x = window.innerWidth / 2;
+        translation.y = window.innerHeight / 2;
+        initFields();
+        render();
+    }
+})

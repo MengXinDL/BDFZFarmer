@@ -66,7 +66,7 @@ class eventDetector {
             this.lastDistance = this.getTouchDistance(e);
 
 
-            if(distance !== 0){
+            if(Math.abs(distance) < 5){
                 requestAnimationFrame(() => {
                     this._scroll.forEach((callback: (delta: number, altKey: boolean) => void) => {
                         callback(distance, false);
