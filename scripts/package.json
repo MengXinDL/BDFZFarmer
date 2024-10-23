@@ -2,6 +2,8 @@
   "dependencies": {
     "events": "^3.3.0",
     "noisejs": "^2.1.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
     "ts-loader": "^9.5.1",
     "typescript": "^5.6.3",
     "webpack": "^5.95.0"
@@ -10,6 +12,12 @@
     "noisejs": "./lib/node_modules/noisejs/dist/noise.min.js"
   },
   "devDependencies": {
-    "@types/noisejs": "^2.1.0"
+    "@babel/core": "^7.25.9",
+    "@babel/preset-typescript": "^7.25.9",
+    "@types/noisejs": "^2.1.0",
+    "@types/react": "^18.3.12",
+    "@types/react-dom": "^18.3.1",
+    "babel-loader": "^9.2.1",
+    "ts-loader": "^9.5.1"
   }
 }

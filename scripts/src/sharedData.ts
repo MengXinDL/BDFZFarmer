@@ -1,12 +1,59 @@
 import Noise from 'noisejs'
 
+interface FieldConfig {
+    color: string;
+    innerText: string;
+    range: [number, number];
+}
+const FieldConfigs: {
+    [key: string]: FieldConfig;
+} = {
+    Unknown: {
+        color: "#000000",
+        innerText: "未知",
+        range: [NaN, NaN]
+    },
+    Desert: {
+        color: "#ffd68f",
+        innerText: "沙漠",
+        range: [0, 0.1]
+    },
+    Saline: {
+        color: "#ffffff",
+        innerText: "盐碱地",
+        range: [0.1, 0.3]
+    },
+    Barren: {
+        color: "#c29c0d",
+        innerText: "贫瘠地",
+        range: [0.3, 0.5]
+    },
+    Regular: {
+        color: "#b56605",
+        innerText: "普通土地",
+        range: [0.5, 0.7]
+    },
+    Nunja: {
+        color: "#7d710a",
+        innerText: "沼泽地",
+        range: [0.7, 0.9]
+    },
+    Lake: {
+        color: "#0085e3",
+        innerText: "湖泊",
+        range: [0.9, 1]
+    }
+}
 
-enum FieldColor {
-    "#ffffff",
-    "#d1a20a",
-    "#a35d1d",
-    "#a3330e",
-    "#613400"
+function getFieldConfig(moisture: number): FieldConfig {
+    for(let f in FieldConfigs){
+        let fc = FieldConfigs[f];
+        if(
+            fc.range[0] <= moisture &&
+            fc.range[1] > moisture
+        ) return fc;
+    }
+    return FieldConfigs.Unknown;
 }
 
 export class box {
@@ -61,23 +108,23 @@ export class box {
 export class Field {
     x: number;
     y: number;
-    fertility: number;
+    moisture: number;
     box: box;
     basicColor: string;
     unlocked: boolean = false;
     canBuy: boolean = false;
     constructor(
         x: number, y: number,
-        fertility: number,
+        moisture: number,
         unlocked: boolean = false
     ) {
         this.x = x;
         this.y = y;
-        this.fertility = fertility;
+        this.moisture = moisture;
         this.basicColor = "#ffb400";
         let f = save.fields.find(f => f.x === x && f.y === y);
         if (f !== undefined) {
-            this.fertility = calcFertility(f);
+            this.moisture = calcMoisture(f);
             this.unlocked = true;
         }
         if (f === undefined) {
@@ -98,7 +145,7 @@ export class Field {
         let txt = "";
         if(translation.scale > 0.5){
             if(this.unlocked) {
-                txt =`肥沃度${(this.fertility * 100).toFixed(0)}`;
+                txt =`肥沃度${(this.moisture * 100).toFixed(0)}`;
             }else if(this.canBuy) {
                 txt =`花费${Field.calcMoney(this)}`;
             }
@@ -121,14 +168,12 @@ export class Field {
     }
     color() {
         return this.unlocked ?
-            FieldColor[
-            Math.floor(this.fertility * 5)
-            ]
+            getFieldConfig(this.moisture).color
             : (this.canBuy ? "#7f7f7f7f" : "#0000007f");
     }
     static calcMoney(f: number | Field,x?: number, y?: number): number {
         if(typeof f !== "number"){
-            return Field.calcMoney(f.fertility, f.x, f.y);
+            return Field.calcMoney(f.moisture, f.x, f.y);
         }
         if(x === undefined || y === undefined){
             throw new Error("x or y is undefined when calcMoney");
@@ -210,10 +255,10 @@ export function rgbtohex(r: number, g: number, b: number): string {
     return '#' + hex;
 }
 
-export function calcFertility(f: Field): number;
-export function calcFertility(x: number, y: number): number;
-export function calcFertility(f: SavedFieldsData): number
-export function calcFertility(x: number | SavedFieldsData | Field, y?: number): number {
+export function calcMoisture(f: Field): number;
+export function calcMoisture(x: number, y: number): number;
+export function calcMoisture(f: SavedFieldsData): number
+export function calcMoisture(x: number | SavedFieldsData | Field, y?: number): number {
     let l = translation.scale * 50;
     let r = 1 / Math.PI / 2;
     if(typeof x === "number"){
@@ -222,7 +267,7 @@ export function calcFertility(x: number | SavedFieldsData | Field, y?: number): 
         rand = (rand + 1) / 2;
         return rand;
     }else{
-        return 'fertility' in x ? x.fertility : calcFertility(x.x, x.y);
+        return 'moisture' in x ? x.moisture : calcMoisture(x.x, x.y);
     }
 }
 

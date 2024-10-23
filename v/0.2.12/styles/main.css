@@ -1,0 +1,48 @@
+body {
+    user-select: none;
+    -moz-user-select: -moz-none;
+    -khtml-user-select: none;
+    -webkit-user-select: none;
+    -o-user-select: none;
+    overflow: hidden;
+}
+
+
+.container {
+    position: relative;
+}
+
+.game-container {
+    display: block;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+}
+
+p#money {
+    color: aliceblue;
+}
+
+.control-container {
+    width: 300px;
+    height: 100vh;
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    background-color: rgba(0, 0, 0, 0.7);
+    justify-content: flex-start;
+    border: 10px solid rgba(0, 0, 0, 0);
+}
+
+.box-container {
+    display: flex;
+    justify-content: flex-start;
+    left: 10px;
+    top: 10p;
+}

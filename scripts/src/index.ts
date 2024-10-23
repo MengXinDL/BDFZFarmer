@@ -3,7 +3,7 @@ import {
     translation,
     data,
     Field,
-    calcFertility,
+    calcMoisture,
     Crops,
     base64, unbase64, parseData,
     VERSION,
@@ -19,7 +19,7 @@ addEventListener('load', () => {
     setInterval(()=>{
         let d = 0;
         save.fields.forEach(field=>{
-            d += calcFertility(field.x, field.y);
+            d += calcMoisture(field.x, field.y);
         });
         save.money += d;
         if(mp) mp.innerText =
@@ -121,21 +121,6 @@ addEventListener('load', () => {
         }
     }
 });
-
-
-setInterval(() => {
-    try {
-        let v = fetch('../statics/version.json').then(res => res.json());
-        v.then(v => {
-            console.log(v);
-            if(v.version !== VERSION){
-                alert(`有新版本了\n${v.details.join('\n')}\n建议保存并刷新`);
-            }
-        })
-    } catch (error) {
-
-    }
-}, 1000 * 60);
 
 setInterval(() => {
     localStorage.setItem('save', base64(JSON.stringify(save)));

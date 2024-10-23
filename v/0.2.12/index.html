@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="zh-CN" version="0.2.11">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="author" content="TopologyJZ">
+  <meta name="description" content="A game to farm in an infinity grid">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <meta name="viewport"
+    content="width=device-width,
+    initial-scale=1,
+    maximum-scale=1,
+    minimun-scale=1,
+    user-scalable=no,
+    target-densitydpi=device-dpi"
+  >
+  <script src="./scripts/node_modules/noisejs/index.js"></script>
+  <script src="./scripts/dist/bundle.js"></script>
+  <link rel="stylesheet" type="text/css" href="./styles/main.css">
+  <title>farmer</title>
+</head>
+<body>
+  <!-- <script>
+    var t = window.devicePixelRatio;
+    document.body.style.zoom = 1 / t;
+
+    document.addEventListener('keydown', function(e) {
+      if((e.ctrlKey || e.metaKey) && ([61, 107, 173, 109, 187, 189].includes(e.which))) {
+        e.preventDefault();
+      }
+    }, false)
+
+    window.addEventListener('mousewheel', function(e) {
+      if(e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+      }
+    }, {passive: false});
+
+    window.addEventListener('DOMMouseScroll', function(e) {
+      if(e.ctrlKey || e.metaKey) {
+        e.preventDefault();
+      }
+    }, {passive: false});
+  </script> -->
+  <div class="container">
+    <div class="game-container">
+      <canvas id="game">
+        Your browser does not support the HTML5 canvas.
+      </canvas>
+    </div>
+    <div class="control">
+      <!-- <button id="home" class="home">
+        <img src="./images/TablerHome.svg" alt="...">
+      </button> -->
+    </div>
+    <div class="control control-container">
+      <div class="ui control">
+        <p id="money">money: 0</p>
+        <!-- <div class="box-container">
+          <input id="seed-input">
+          <button id="seed">输入种子</button>
+        </div> -->
+        <div class="box-container">
+          <button id="home">
+            <img src="./images/TablerHome.svg" alt="..." style="height: 20px; width: 20px;">
+          </button>
+        </div>
+        <div class="box-container">
+          <button id="save">保存</button>
+          <button id="load">加载</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

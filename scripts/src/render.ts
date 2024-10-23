@@ -5,6 +5,8 @@ import {
     save, parseData, base64, unbase64
 } from "./sharedData";
 import { interact } from "./interact";
+import React from 'react';
+import ReactDOM from "react-dom";
 
 /**
  * Called when the page is loaded. Initializes the canvas and calls
@@ -73,7 +75,6 @@ function init(): void {
     render();
 
 }
-
 
 function resize(): void {
     data.gamecvs.width = window.innerWidth;
