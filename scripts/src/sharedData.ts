@@ -145,7 +145,7 @@ export class Field {
         let txt = "";
         if(translation.scale > 0.5){
             if(this.unlocked) {
-                txt =`肥沃度${(this.moisture * 100).toFixed(0)}`;
+                txt =`含水量${(this.moisture * 100).toFixed(0)}`;
             }else if(this.canBuy) {
                 txt =`花费${Field.calcMoney(this)}`;
             }

@@ -22,26 +22,22 @@ module.exports = {
     module: {
         rules: [
             {
-                test: /\.ts$/,
+                test: /\.(ts|tsx)$/,
                 exclude: /node_modules/,
+                include: path.resolve(__dirname, "src"),
                 use: [
                     {
-                        loader: 'ts-loader',
-                    }
-                ]
-            },
-            {
-                test: /\.tsx?$/,
-                use: [
-                    {
-                        loader: 'babel-loader',
+                        loader: "babel-loader",
                         options: {
-                            presets: ['@babel/preset-typescript'],
-                        },
+                            cacheDirectory: true,
+                            presets: [
+                                "@babel/preset-env",
+                                "@babel/preset-react",
+                                "@babel/preset-typescript"
+                            ]
+                        }
                     },
-                    {
-                        loader: 'ts-loader',
-                    },
+                    "ts-loader"
                 ],
             },
         ]

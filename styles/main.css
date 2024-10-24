@@ -44,5 +44,22 @@ p#money {
     display: flex;
     justify-content: flex-start;
     left: 10px;
-    top: 10p;
+    top: 10px;
+}
+
+.notice {
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    z-index: 999;
+    width: 300px;
+    height: 200px;
+    background-color: rgba(0, 0, 0, 0.7);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+.notice-title {
+    color: rgba(0, 0, 0, 0.8);
+    text-align: center;
 }
