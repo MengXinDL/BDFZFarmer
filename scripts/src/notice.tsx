@@ -1,10 +1,9 @@
 import * as React from 'react';
-import ReactDOM from 'react-dom';
 import { createRoot } from 'react-dom/client';
 import evt from './event';
 function Notice(
     {title, content, children}:
-    {title: string, content?: string, children?: React.ReactNode}
+    {title: string, content?: string, children?: React.JSX.Element[]}
 ) {
     let notice = <div className='notice'>
         <div className='notice-title'>
@@ -35,17 +34,27 @@ function Notice(
                 fontWeight: 'bold'
             }}>{title}</span>
         </div>
-        <div className='notice-content'>{content}</div>
-        {children}
+        <div className='notice-content'>
+            <p>{content}</p>
+            {children}
+        </div>
     </div>;
     return notice;
 }
-
-addEventListener('load', () => {
+function showNotice(title: string, content: string | string[], children?: React.JSX.Element) {
     const root = createRoot(document.getElementById('root') as HTMLElement);
-    root.render(<Notice title='北大附中' content='mygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygomygo' />);
-    evt.on('notice-close', () => {
+    if (typeof content === 'string') {
+        content = [content];
+    }
+    let n = content.map((c, index) => <p key={index}>{c}</p>);
+    if(children !== undefined){
+        children.key = content.length.toString();
+        n.push(children)
+    }
+    root.render(<Notice title={title} content="" >{n}</Notice>);
+    let e = evt.on('notice-close', () => {
         root.unmount();
-    })
-})
-console.log(<Notice title='Hello' content='World' />);
+        evt.remove(e.id);
+    });
+}
+export default showNotice;

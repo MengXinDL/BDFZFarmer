@@ -28,7 +28,7 @@ interface SavedFieldsData {
     unlocked: boolean;
     moisture: number;
 }
-export declare const VERSION = "1.0.7";
+export declare const VERSION: string;
 export declare const save: {
     fields: {
         [pos: string]: SavedFieldsData;
@@ -63,5 +63,5 @@ export declare enum Crops {
 }
 export declare function base64(str: string): string;
 export declare function unbase64(str: string): string;
-export declare function initSaveData(saveData: object): void;
+export declare function initSaveData(saveData: object): boolean;
 export {};

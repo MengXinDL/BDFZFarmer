@@ -1,5 +1,5 @@
 import Noise from 'noisejs'
-
+import version  from '../../statics/version.json';
 interface FieldConfig {
     color: string;
     innerText: string;
@@ -46,9 +46,9 @@ const FieldConfigs: {
 }
 
 function getFieldConfig(moisture: number): FieldConfig {
-    for(let f in FieldConfigs){
+    for (let f in FieldConfigs) {
         let fc = FieldConfigs[f];
-        if(
+        if (
             fc.range[0] <= moisture &&
             fc.range[1] > moisture
         ) return fc;
@@ -83,10 +83,10 @@ export class box {
         }
 
         ctx.fillStyle = this.color;
-        if(translation.scale > 0.5)ctx.fillRect(this.x + 1, this.y + 1, this.width - 1, this.height - 1);
+        if (translation.scale > 0.5) ctx.fillRect(this.x, this.y, this.width, this.height);
         else ctx.fillRect(this.x, this.y, this.width, this.height);
 
-        if(this.innerText === "") {
+        if (this.innerText === "") {
             return;
         }
         const textLines = this.innerText.split('\n');
@@ -112,7 +112,6 @@ export class Field {
     box: box;
     basicColor: string;
     unlocked: boolean = false;
-    canBuy: boolean = false;
     constructor(
         x: number, y: number,
         moisture: number,
@@ -122,37 +121,22 @@ export class Field {
         this.y = y;
         this.moisture = moisture;
         this.basicColor = "#ffb400";
-        let f = save.fields.find(f => f.x === x && f.y === y);
+        let f = save.fields[`${x},${y}`];
         if (f !== undefined) {
-            this.moisture = calcMoisture(f);
-            this.unlocked = true;
-        }
-        if (f === undefined) {
-            for (const a of data.around) {
-                if (this.canBuy) break;
-                save.fields.some(field => {
-                    if (
-                        field.x === a[0] + this.x &&
-                        field.y === a[1] + this.y
-                    ) {
-                        this.canBuy = true;
-                        return true;
-                    }
-                    return false;
-                });
-            }
+            this.moisture = f.moisture;
+            this.unlocked = f.unlocked;
         }
         let txt = "";
-        if(translation.scale > 0.5){
-            if(this.unlocked) {
-                txt =`含水量${(this.moisture * 100).toFixed(0)}`;
-            }else if(this.canBuy) {
-                txt =`花费${Field.calcMoney(this)}`;
+        if (translation.scale > 0.5) {
+            if (this.unlocked) {
+                txt = getFieldConfig(this.moisture).innerText;
+            } else {
+                txt = `花费${Field.calcMoney(this)}`;
             }
         }
         this.box = new box(
-            x * 50 * translation.scale + translation.x,
-            y * 50 * translation.scale + translation.y,
+            x * 50 * translation.scale + translation.x + window.innerWidth / 2,
+            y * 50 * translation.scale + translation.y + window.innerHeight / 2,
             translation.scale * 50,
             translation.scale * 50,
             this.color(),
@@ -160,22 +144,18 @@ export class Field {
         );
     }
     render() {
-        if(
-            !this.canBuy && !this.unlocked &&
-            translation.scale < 0.5
-        ) return;
         this.box.render();
     }
     color() {
         return this.unlocked ?
             getFieldConfig(this.moisture).color
-            : (this.canBuy ? "#7f7f7f7f" : "#0000007f");
+            : "#ffffff7f";
     }
-    static calcMoney(f: number | Field,x?: number, y?: number): number {
-        if(typeof f !== "number"){
+    static calcMoney(f: number | Field, x?: number, y?: number): number {
+        if (typeof f !== "number") {
             return Field.calcMoney(f.moisture, f.x, f.y);
         }
-        if(x === undefined || y === undefined){
+        if (x === undefined || y === undefined) {
             throw new Error("x or y is undefined when calcMoney");
         }
         return Math.floor(
@@ -192,18 +172,24 @@ export class Field {
 interface SavedFieldsData {
     x: number,
     y: number,
-    crop: number
+    crop: number,
+    unlocked: boolean,
+    moisture: number
 }
 
-export const VERSION = '0.2.12';
+export const VERSION = version.version;
 export const save: {
-    fields: SavedFieldsData[],
+    fields: {
+        [pos: string]: SavedFieldsData
+    },
     money: number,
     seed: number,
+    version: string
 } = {
-    fields: [],
+    fields: {},
     money: 0,
     seed: Math.floor(Math.random() * 1000000000),
+    version: VERSION
 }
 
 export const data: {
@@ -214,7 +200,7 @@ export const data: {
 } = {
     gamecvs: document.getElementById('game') as HTMLCanvasElement,
     fields: [],
-    noise: new window.Noise,
+    noise: new Noise(),
     around: [
         [-1, -1],
         [0, -1],
@@ -226,7 +212,7 @@ export const data: {
         [1, 1]
     ],
 };
-data.noise = new window.Noise(save.seed)
+data.noise = new Noise(save.seed)
 console.log(save.seed);
 
 export const translation: { x: number, y: number, scale: number } = {
@@ -261,18 +247,19 @@ export function calcMoisture(f: SavedFieldsData): number
 export function calcMoisture(x: number | SavedFieldsData | Field, y?: number): number {
     let l = translation.scale * 50;
     let r = 1 / Math.PI / 2;
-    if(typeof x === "number"){
-        if(y === undefined) return 0;
+    if (typeof x === "number") {
+        if (y === undefined) return 0;
         let rand = data.noise.perlin2(x * r, y * r);
         rand = (rand + 1) / 2;
         return rand;
-    }else{
-        return 'moisture' in x ? x.moisture : calcMoisture(x.x, x.y);
+    } else {
+        return x.moisture;
     }
 }
 
 export enum Crops {
-    corn,
+    None,
+    Corn,
 }
 
 export function base64(str: string): string {
@@ -282,6 +269,48 @@ export function base64(str: string): string {
 export function unbase64(str: string): string {
     return decodeURIComponent(escape(atob(str)));
 }
-export function parseData(data: object): object {
-    return data;
+export function initSaveData(saveData: object) {
+    let d = JSON.parse(JSON.stringify(saveData));
+    let s = false;
+
+    data.noise.seed(d.seed || save.seed);
+    console.log(`readed version ${d.version ? d.version : "unknown"}`);
+    console.log(`current version ${VERSION}`);
+    s = d.version == VERSION;
+    d.version = VERSION;
+
+    for (const [key, value] of Object.entries(saveData)) {
+
+        //to support version 0.2.11 data
+        if (key === "fields") {
+            if (value instanceof Array) {
+                let v: { [pos: string]: SavedFieldsData } = {};
+                for (const f of value as SavedFieldsData[]) {
+                    v[`${f.x},${f.y}`] = f;
+                }
+                d[key] = v;
+            }
+            for (let f in d[key]) {
+                if (!("moisture" in d[key][f]) || (d[key][f].moisture === undefined)) d[key][f].moisture = calcMoisture(d[key][f].x, d[key][f].y);
+                if (!("unlocked" in d[key][f]) || (d[key][f].unlocked === undefined)) d[key][f].unlocked = true;
+                if (!("crop" in d[key][f]) || (d[key][f].crop === undefined)) d[key][f].crop = Crops.None;
+                if (d[key][f].unlocked) {
+                    for (const a of data.around) {
+                        let x = a[0] + d[key][f].x;
+                        let y = a[1] + d[key][f].y;
+                        if (!d[key][`${x},${y}`]) {
+                            d[key][`${x},${y}`] = {
+                                x, y,
+                                crop: Crops.None,
+                                unlocked: false,
+                                moisture: calcMoisture(x, y)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+    Object.assign(save, d);
+    return s;
 }

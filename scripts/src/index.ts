@@ -5,64 +5,74 @@ import {
     Field,
     calcMoisture,
     Crops,
-    base64, unbase64, parseData,
+    base64, unbase64, initSaveData,
     VERSION,
 } from "./sharedData";
 import { interact } from "./interact";
 import {
     render, initFields,
 } from "./render";
-
+import notice from './notice'
 
 addEventListener('load', () => {
     let mp = document.getElementById('money');
-    setInterval(()=>{
+    setInterval(() => {
         let d = 0;
-        save.fields.forEach(field=>{
-            d += calcMoisture(field.x, field.y);
-        });
+        for (const f of data.fields) {
+            d += calcMoisture(f);
+        }
         save.money += d;
-        if(mp) mp.innerText =
-`money: ${save.money.toFixed(2)}
+        if (mp) mp.innerText =
+            `money: ${save.money.toFixed(2)}
 ${d.toFixed(2)}/s`;
     }, 1000)
 })
 
 
 interact.click = (x: number, y: number) => {
-    if(translation.scale < 0.5)return;
+    if (translation.scale < 0.5) return;
 
-    if(!interact.pressedElement || interact.pressedElement !== data.gamecvs){
+    if (!interact.pressedElement || interact.pressedElement !== data.gamecvs) {
         return;
     }
 
-    let x1 = Math.floor((x - translation.x) / translation.scale / 50);
-    let y1 = Math.floor((y - translation.y) / translation.scale / 50);
+    let x1 = Math.floor((x - translation.x - window.innerWidth / 2) / translation.scale / 50);
+    let y1 = Math.floor((y - translation.y - window.innerHeight / 2) / translation.scale / 50);
+    console.log(x1, y1);
 
-    if(save.fields.some(f => f.x === x1 && f.y === y1)){
+    let f = save.fields[`${x1},${y1}`];
+    if (save.fields[`${x1},${y1}`] === undefined || f.unlocked) {
         return;
     }
 
-    let f = data.fields.find(f => f.x === x1 && f.y === y1);
-    if(!f || !f.canBuy){
+    let m = Field.calcMoney(f.moisture, f.x, f.y);
+    if (m > save.money) {
+        notice('你钱不够', [`需要${m.toFixed(2)}`, `但你只有${save.money.toFixed(2)}`]);
         return;
     }
-    if(Field.calcMoney(f) > save.money){
-        alert(
-`你钱不够
-需要${Field.calcMoney(f)}
-但你只有${save.money.toFixed(2)}
-`
-        );
-        return;
-    }
-    save.money -= Field.calcMoney(f);
-    
-    save.fields.push({
+    save.money -= m;
+
+    save.fields[`${x1},${y1}`] = {
         x: x1,
         y: y1,
-        crop: Crops.corn
-    });
+        crop: Crops.None,
+        moisture: calcMoisture(x1, y1),
+        unlocked: true
+    }
+    for (const a of data.around) {
+        let x2 = a[0] + x1;
+        let y2 = a[1] + y1;
+        if (!save.fields[`${x2},${y2}`]) {
+            save.fields[`${x2},${y2}`] = {
+                x: x2,
+                y: y2,
+                crop: Crops.None,
+                moisture: calcMoisture(a[0], a[1]),
+                unlocked: false
+            }
+        }
+    }
+
     initFields();
     render();
 }
@@ -84,8 +94,7 @@ addEventListener('load', () => {
             reader.onload = (e) => {
                 const content = e.target?.result as string;
                 try {
-                    Object.assign(save, parseData(JSON.parse(unbase64(content))));
-                    data.noise.seed(save.seed);
+                    initSaveData(JSON.parse(unbase64(content)))
                     initFields();
                     render();
                 } catch (error) {
@@ -100,7 +109,7 @@ addEventListener('load', () => {
             reader.readAsText(file);
         }
     })
-    if(s && l){
+    if (s && l) {
         s.onclick = () => {
             let obj = JSON.parse(JSON.stringify(save));
             obj.version = VERSION;
@@ -130,8 +139,8 @@ addEventListener('load', () => {
     let home = document.getElementById('home') as HTMLButtonElement;
     home.onclick = () => {
         translation.scale = 2;
-        translation.x = window.innerWidth / 2;
-        translation.y = window.innerHeight / 2;
+        translation.x = 0;
+        translation.y = 0;
         initFields();
         render();
     }

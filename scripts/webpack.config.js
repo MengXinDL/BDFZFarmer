@@ -42,7 +42,10 @@ module.exports = {
             },
         ]
     },
+    externalsType: 'window',
     externals: {
-        'noisejs': 'noisejs',
+        'noisejs': 'Noise',
+        'react': 'React',
+        'react-dom/client': 'ReactDOM',
     }
 }
