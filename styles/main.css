@@ -55,11 +55,21 @@ p#money {
     width: 300px;
     height: 200px;
     background-color: rgba(0, 0, 0, 0.7);
-    top: 50%;
-    left: 50%;
+    top: 50vh;
+    left: 50vw;
     transform: translate(-50%, -50%);
+    border-radius: 10px;
+    overflow: hidden;
+    color: white;
 }
 .notice-title {
-    color: rgba(0, 0, 0, 0.8);
+    color: rgba(0, 0, 0, 1);
     text-align: center;
+    display: flex;
+    flex-direction: row;
+}
+.notice-content {
+    height: 100%;
+    width: 100%;
+    border: 10px solid rgba(0, 0, 0, 0);
 }

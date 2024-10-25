@@ -118,14 +118,13 @@ interact.move = (x: number, y: number) => {
     render();
 }
 
-interact.scroll = (delta: number) => {
+interact.scroll = (scale: number) => {
 
     if(interact.pressed && interact.pressedElement !== data.gamecvs){
         return;
     }
 
-    let r = 1 + delta / 100;
-    translation.scale *= r;
+    translation.scale *= scale;
     translation.scale = Math.max(0.1, translation.scale);
     translation.scale = Math.min(10, translation.scale);
     initFields();

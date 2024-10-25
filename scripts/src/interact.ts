@@ -49,8 +49,8 @@ class eventDetector {
 
         //Idea from GaoKai
         document.addEventListener('wheel', (e: WheelEvent) => {
-            this._scroll.forEach((callback: (delta: number, altKey: boolean) => void) => {
-                callback(e.deltaY, e.altKey);
+            this._scroll.forEach((callback: (scale: number, altKey: boolean) => void) => {
+                callback(1 + e.deltaY / 100, e.altKey);
             })
         })
     }
@@ -74,7 +74,7 @@ class eventDetector {
             }else if(Math.abs(distance) < 5){
                 requestAnimationFrame(() => {
                     this._scroll.forEach((callback: (delta: number, altKey: boolean) => void) => {
-                        callback(distance, false);
+                        callback((distance + this.startDistance) / (this.startDistance), false);
                     })
                 })
             }
