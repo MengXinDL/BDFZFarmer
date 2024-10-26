@@ -5,6 +5,7 @@ class eventDetector {
 
     pressed = false;
     pressedElement: HTMLElement | null = null;
+    curentElement: HTMLElement | null = null;
 
     private lastX = 0;
     private lastY = 0;
@@ -23,6 +24,7 @@ class eventDetector {
     }
     initMouse() {
         document.addEventListener('mousemove', (e: MouseEvent) => {
+            this.curentElement = e.target as HTMLElement;
             requestAnimationFrame(() => {
                 this._move.forEach((callback: (x: number, y: number) => void) => {
                     callback(e.movementX, e.movementY);
@@ -57,6 +59,7 @@ class eventDetector {
     initTouch() {
         //To support touch events
         document.addEventListener('touchmove', (e: TouchEvent) => {
+            this.curentElement = e.target as HTMLElement;
             let x = e.touches[0].clientX - this.lastX;
             let y = e.touches[0].clientY - this.lastY;
             this.lastX = e.touches[0].clientX;
@@ -80,6 +83,7 @@ class eventDetector {
             }
         });
         document.addEventListener('touchstart', (e: TouchEvent) => {
+            this.curentElement = e.target as HTMLElement;
             this.lastX = e.touches[0].clientX;
             this.lastY = e.touches[0].clientY;
 
@@ -93,6 +97,7 @@ class eventDetector {
             this.pressed = true;
         });
         document.addEventListener('touchend', (e: TouchEvent) => {
+            this.curentElement = null;
             this.pressedElement = null;
             this.pressed = false;
         });

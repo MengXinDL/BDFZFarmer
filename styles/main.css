@@ -51,26 +51,33 @@ p#money {
     justify-content: center;
     align-items: center;
     position: absolute;
+
     z-index: 999;
     width: 300px;
     height: 200px;
-    background-color: rgba(0, 0, 0, 0.7);
     top: 50vh;
     left: 50vw;
+
+    background-color: rgba(0, 0, 0, 0.7);
     transform: translate(-50%, -50%);
     border-radius: 10px;
     overflow: hidden;
     color: white;
+
+    overflow-y: hidden;
+    display: flex;
+    flex-direction: column;
 }
 .notice-title {
+    justify-content: space-between;
     color: rgba(0, 0, 0, 1);
     text-align: center;
-    display: flex;
     flex-direction: row;
+    display: flex;
+    width: 100%;
 }
 .notice-content {
-    height: 100%;
-    width: 100%;
+    flex: 1;
     border: 10px solid rgba(0, 0, 0, 0);
     overflow-x: hidden;
     overflow-y: auto;

@@ -13,13 +13,15 @@ import {
     render, initFields,
 } from "./render";
 import notice from './notice'
+import LZString from 'lz-string';
+import db from "./database";
 
 addEventListener('load', () => {
     let mp = document.getElementById('money');
     setInterval(() => {
         let d = 0;
-        for (const f of data.fields) {
-            d += calcMoisture(f);
+        for (const f in save.fields) {
+            d += calcMoisture(save.fields[f]);
         }
         save.money += d;
         if (mp) mp.innerText =
@@ -77,6 +79,20 @@ interact.click = (x: number, y: number) => {
     render();
 }
 
+addEventListener('load', () => {
+    let home = document.getElementById('home') as HTMLButtonElement;
+    home.onclick = () => {
+        translation.scale = 2;
+        translation.x = 0;
+        translation.y = 0;
+        initFields();
+        render();
+    }
+})
+
+
+/************************************* 保存与读取 *********************************************** */
+
 
 
 addEventListener('load', () => {
@@ -92,13 +108,26 @@ addEventListener('load', () => {
             const reader = new FileReader();
 
             reader.onload = (e) => {
-                const content = e.target?.result as string;
+                const content = new Uint8Array(e.target?.result as ArrayBuffer);
                 try {
-                    initSaveData(JSON.parse(unbase64(content)))
+                    initSaveData(JSON.parse(unbase64(LZString.decompressFromUint8Array(content))));
+                } catch (error1) {
+                    try {
+                        initSaveData(JSON.parse(unbase64(new TextDecoder('ascii').decode(content))));
+                    }catch (error2) {
+                        notice(
+                            '无法读取的存档',
+                            [
+                                '请确认存档文件是否损坏',
+                                'error when reading as text: ' + error2,
+                                'error when reading as binary: ' + error1
+                            ]
+                        );
+                    }
+                } finally {
+                    fileInput.value = '';
                     initFields();
                     render();
-                } catch (error) {
-                    console.error('加载失败\nError parsing JSON:', error);
                 }
             };
 
@@ -106,15 +135,13 @@ addEventListener('load', () => {
                 console.error('Error reading file:', error);
             };
 
-            reader.readAsText(file);
+            reader.readAsArrayBuffer(file);
         }
     })
     if (s && l) {
         s.onclick = () => {
-            let obj = JSON.parse(JSON.stringify(save));
-            obj.version = VERSION;
-            const content = base64(JSON.stringify(obj));
-            const blob = new Blob([content], { type: 'text/plain' });
+            const content = base64(JSON.stringify(save));
+            const blob = new Blob([LZString.compressToUint8Array(content)], { type: 'application/octet-stream' });
             const url = URL.createObjectURL(blob);
 
             a.href = url;
@@ -132,16 +159,5 @@ addEventListener('load', () => {
 });
 
 setInterval(() => {
-    localStorage.setItem('save', base64(JSON.stringify(save)));
+    db.save.updateData('save', save);
 }, 10000);
-
-addEventListener('load', () => {
-    let home = document.getElementById('home') as HTMLButtonElement;
-    home.onclick = () => {
-        translation.scale = 2;
-        translation.x = 0;
-        translation.y = 0;
-        initFields();
-        render();
-    }
-})

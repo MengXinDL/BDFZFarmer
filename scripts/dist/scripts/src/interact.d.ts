@@ -4,6 +4,7 @@ declare class eventDetector {
     private _scroll;
     pressed: boolean;
     pressedElement: HTMLElement | null;
+    curentElement: HTMLElement | null;
     private lastX;
     private lastY;
     private startX;

@@ -1,5 +1,6 @@
 import Noise from 'noisejs'
 import version  from '../../statics/version.json';
+
 interface FieldConfig {
     color: string;
     innerText: string;
@@ -184,7 +185,7 @@ export const save: {
     },
     money: number,
     seed: number,
-    version: string
+    version: string,
 } = {
     fields: {},
     money: 0,

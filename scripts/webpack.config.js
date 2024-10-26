@@ -6,8 +6,9 @@ module.exports = {
         './src/sharedData.ts',
         './src/render.ts',
         './src/interact.ts',
+        './src/database.ts',
 
-        './src/notice.tsx'
+        './src/notice.tsx',
     ],
     output: {
         filename: 'bundle.js',
@@ -47,5 +48,6 @@ module.exports = {
         'noisejs': 'Noise',
         'react': 'React',
         'react-dom/client': 'ReactDOM',
+        'lz-string': 'LZString',
     }
 }

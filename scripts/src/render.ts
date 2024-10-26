@@ -9,6 +9,7 @@ import {
 import { interact } from "./interact";
 import notice from './notice'
 import version from '../../statics/version.json'
+import db from "./database";
 
 /**
  * Called when the page is loaded. Initializes the canvas and calls
@@ -44,7 +45,7 @@ export function initFields() {
  * Initializes the game. Called once when the page is loaded. Sets up the
  * canvas, sets the initial state of the game, and draws the initial frame.
  */
-function init(): void {
+async function init(): Promise<void> {
 
     translation.x = 0;
     translation.y = 0;
@@ -55,9 +56,18 @@ function init(): void {
     const ctx = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
     ctx.font = `${10 * translation.scale}px sans-serif`;
 
+    let s = await db.save.getData('save');
+
+    // 为读取旧版本存档
     if (localStorage.getItem('save')) {
-        let s = localStorage.getItem('save') as string;
-        if(! initSaveData(JSON.parse(unbase64(s)))){
+        let _s = localStorage.getItem('save') as string;
+        if(! initSaveData(JSON.parse(unbase64(_s)))){
+            notice(`新版本：${version.version}!`, version.details)
+        }
+        db.save.addData('save', save);
+        localStorage.removeItem('save');
+    } else if (s) {
+        if(! initSaveData(s)){
             notice(`新版本：${version.version}!`, version.details)
         }
     } else {
@@ -130,6 +140,10 @@ interact.scroll = (scale: number) => {
     if (interact.pressed && interact.pressedElement !== data.gamecvs) {
         return;
     }
+    if (interact.curentElement !== data.gamecvs) {
+        return;
+    }
+
     let s = translation.scale;
     translation.scale *= scale;
     translation.scale = Math.max(0.1, translation.scale);
