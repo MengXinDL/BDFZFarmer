@@ -2,13 +2,14 @@ let path = require('path');
 
 module.exports = {
     entry: [
-        './src/index.ts',
+        './src/save.ts',
         './src/sharedData.ts',
         './src/render.ts',
         './src/interact.ts',
         './src/database.ts',
 
         './src/notice.tsx',
+        './src/index.tsx',
     ],
     output: {
         filename: 'bundle.js',

@@ -56,8 +56,12 @@ async function init(): Promise<void> {
     const ctx = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
     ctx.font = `${10 * translation.scale}px sans-serif`;
 
-    let s = await db.save.getData('save');
-
+    let s;
+    try {
+        s = await db.save.getData('save');
+    } catch (e) {
+        s = null;
+    }
     // 为读取旧版本存档
     if (localStorage.getItem('save')) {
         let _s = localStorage.getItem('save') as string;
@@ -66,7 +70,7 @@ async function init(): Promise<void> {
         }
         db.save.addData('save', save);
         localStorage.removeItem('save');
-    } else if (s) {
+    } else if (s !== null) {
         if(! initSaveData(s)){
             notice(`新版本：${version.version}!`, version.details)
         }
@@ -87,6 +91,7 @@ async function init(): Promise<void> {
                 moisture: calcMoisture(a[0], a[1])
             }
         }
+        db.save.addData('save', save);
     }
     initFields();
 

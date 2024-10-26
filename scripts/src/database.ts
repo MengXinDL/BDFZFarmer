@@ -83,6 +83,12 @@ class IndexedDBDatabase {
     return new Promise((resolve, reject) => {
       request.onsuccess = () => {
         const value = request.result;
+        if (!value || !value.value) {
+          console.log(`Data not found: ${key}`);
+          resolve(null);
+          return;
+        }
+        console.log(`Data retrieved successfully: ${key} = ${value}`);
         resolve(value.value);
       };
   
