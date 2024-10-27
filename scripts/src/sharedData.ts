@@ -46,7 +46,7 @@ const FieldConfigs: {
     }
 }
 
-function getFieldConfig(moisture: number): FieldConfig {
+export function getFieldConfig(moisture: number): FieldConfig {
     for (let f in FieldConfigs) {
         let fc = FieldConfigs[f];
         if (
@@ -132,7 +132,10 @@ export class Field {
             if (this.unlocked) {
                 txt = getFieldConfig(this.moisture).innerText;
             } else {
-                txt = `花费${Field.calcMoney(this)}`;
+                txt =
+`花费${Field.calcMoney(this)}
+${getFieldConfig(this.moisture).innerText}
+`;
             }
         }
         this.box = new box(
@@ -173,7 +176,7 @@ export class Field {
 interface SavedFieldsData {
     x: number,
     y: number,
-    crop: number,
+    crop: Crops,
     unlocked: boolean,
     moisture: number
 }
@@ -261,6 +264,10 @@ export function calcMoisture(x: number | SavedFieldsData | Field, y?: number): n
 export enum Crops {
     None,
     Corn,
+}
+export const CropsName = {
+    [Crops.None]: "无",
+    [Crops.Corn]: "小麦"
 }
 
 export function base64(str: string): string {

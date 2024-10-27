@@ -38,11 +38,13 @@ addEventListener('load', () => {
                     }catch (error2) {
                         notice(
                             '无法读取的存档',
-                            [
-                                '请确认存档文件是否损坏',
-                                'error when reading as text: ' + error2,
-                                'error when reading as binary: ' + error1
-                            ]
+                            {
+                                text: [
+                                    '请确认存档文件是否损坏',
+                                    'error when reading as text: ' + error2,
+                                    'error when reading as binary: ' + error1
+                                ]
+                            }
                         );
                     }
                 } finally {

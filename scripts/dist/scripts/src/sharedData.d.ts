@@ -1,4 +1,10 @@
 import Noise from 'noisejs';
+interface FieldConfig {
+    color: string;
+    innerText: string;
+    range: [number, number];
+}
+export declare function getFieldConfig(moisture: number): FieldConfig;
 export declare class box {
     x: number;
     y: number;
@@ -24,7 +30,7 @@ export declare class Field {
 interface SavedFieldsData {
     x: number;
     y: number;
-    crop: number;
+    crop: Crops;
     unlocked: boolean;
     moisture: number;
 }
@@ -61,6 +67,10 @@ export declare enum Crops {
     None = 0,
     Corn = 1
 }
+export declare const CropsName: {
+    0: string;
+    1: string;
+};
 export declare function base64(str: string): string;
 export declare function unbase64(str: string): string;
 export declare function initSaveData(saveData: object): boolean;

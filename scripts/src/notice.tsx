@@ -41,15 +41,18 @@ function Notice(
     </div>;
     return notice;
 }
-function showNotice(title: string, content: string | string[], children?: React.JSX.Element) {
+function showNotice(title: string, contents:{
+    text?: string | string[],
+    children?: React.JSX.Element
+}) {
     const root = createRoot(document.getElementById('root') as HTMLElement);
-    if (typeof content === 'string') {
-        content = [content];
+    if (typeof contents.text === 'string') {
+        contents.text = [contents.text];
     }
-    let n = content.map((c, index) => <p key={index}>{c}</p>);
-    if(children !== undefined){
-        children.key = content.length.toString();
-        n.push(children)
+    let n = contents.text ? contents.text.map((c, index) => <p key={index}>{c}</p>) : [];
+    if(contents.children !== undefined){
+        contents.children.key = n.length.toString();
+        n.push(contents.children)
     }
     root.render(<Notice title={title} content="" >{n}</Notice>);
     let e = evt.on('notice-close', () => {
