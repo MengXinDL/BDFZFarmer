@@ -1,2 +1,2 @@
 *.json.gz
-./dist
+scripts/dist
