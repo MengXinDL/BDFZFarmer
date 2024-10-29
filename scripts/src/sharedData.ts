@@ -1,5 +1,5 @@
-import Noise from 'noisejs';    //引用noisejs
-import version  from '../../statics/version.json';  //引用版本信息
+import Noise from 'noisejs';
+import version  from '../../statics/version.json';
 
 interface FieldConfig {
     color: string;
@@ -133,10 +133,7 @@ export class Field {
             if (this.unlocked) {
                 txt = getFieldConfig(this.moisture).innerText;
             } else {
-                txt =
-`花费${Field.calcMoney(this)}
-${getFieldConfig(this.moisture).innerText}
-`;
+                txt =`花费${Field.calcMoney(this)}`;
             }
         }
         let p = boxToPix(this.x, this.y);
@@ -163,10 +160,7 @@ ${getFieldConfig(this.moisture).innerText}
         if (x === undefined || y === undefined) {
             throw new Error("x or y is undefined when calcMoney");
         }
-        return Math.floor(
-            (f + 1) *
-            (x * x + y * y) ** 1.3
-        );
+        return Math.floor((x * x + y * y) ** 1.4);
     }
 }
 
