@@ -1,5 +1,5 @@
-import Noise from 'noisejs'
-import version  from '../../statics/version.json';
+import Noise from 'noisejs';    //引用noisejs
+import version  from '../../statics/version.json';  //引用版本信息
 
 interface FieldConfig {
     color: string;
@@ -123,6 +123,7 @@ export class Field {
         this.moisture = moisture;
         this.basicColor = "#ffb400";
         let f = save.fields[`${x},${y}`];
+        console.log(f,moisture);
         if (f !== undefined) {
             this.moisture = f.moisture;
             this.unlocked = f.unlocked;
@@ -138,9 +139,9 @@ ${getFieldConfig(this.moisture).innerText}
 `;
             }
         }
+        let p = boxToPix(this.x, this.y);
         this.box = new box(
-            x * 50 * translation.scale + translation.x + window.innerWidth / 2,
-            y * 50 * translation.scale + translation.y + window.innerHeight / 2,
+            p.x, p.y,
             translation.scale * 50,
             translation.scale * 50,
             this.color(),
@@ -321,4 +322,24 @@ export function initSaveData(saveData: object) {
     }
     Object.assign(save, d);
     return s;
+}
+
+export function pixToBox(x: number, y: number) {
+    return {
+        x: Math.floor(
+            (x - translation.x - window.innerWidth / 2) /
+            translation.scale / 50
+        ),
+        y: Math.floor(
+            (y - translation.y - window.innerHeight / 2) /
+            translation.scale / 50
+        ),
+    }
+}
+
+export function boxToPix(x: number, y: number) {
+    return {
+        x: x * 50 * translation.scale + translation.x + window.innerWidth / 2,
+        y: y * 50 * translation.scale + translation.y + window.innerHeight / 2,
+    }
 }

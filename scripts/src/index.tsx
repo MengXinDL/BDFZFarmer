@@ -5,7 +5,8 @@ import {
     Field,
     calcMoisture,
     Crops, CropsName,
-    getFieldConfig
+    getFieldConfig,
+    pixToBox
 } from "./sharedData";
 import { interact } from "./interact";
 import {
@@ -20,6 +21,7 @@ addEventListener('load', () => {
     setInterval(() => {
         let d = 0;
         for (const f in save.fields) {
+            if (!save.fields[f].unlocked) continue;
             d += calcMoisture(save.fields[f]);
         }
         save.money += d;
@@ -37,8 +39,8 @@ interact.click = (x: number, y: number) => {
         return;
     }
 
-    let x1 = Math.floor((x - translation.x - window.innerWidth / 2) / translation.scale / 50);
-    let y1 = Math.floor((y - translation.y - window.innerHeight / 2) / translation.scale / 50);
+    let { x: x1, y: y1 } = pixToBox(x, y);
+
     console.log(x1, y1);
 
     let f = save.fields[`${x1},${y1}`];
@@ -55,24 +57,16 @@ interact.click = (x: number, y: number) => {
             return;
         }
         save.money -= m;
-        save.fields[`${x1},${y1}`] = {
-            x: x1,
-            y: y1,
-            crop: Crops.None,
-            moisture: calcMoisture(x1, y1),
-            unlocked: true
-        }
+        save.fields[`${x1},${y1}`].unlocked = true;
         for (const a of data.around) {
             let x2 = a[0] + x1;
             let y2 = a[1] + y1;
-            if (!save.fields[`${x2},${y2}`]) {
-                save.fields[`${x2},${y2}`] = {
-                    x: x2,
-                    y: y2,
-                    crop: Crops.None,
-                    moisture: calcMoisture(a[0], a[1]),
-                    unlocked: false
-                }
+            save.fields[`${x2},${y2}`] = save.fields[`${x2},${y2}`] || {
+                x: x2,
+                y: y2,
+                crop: Crops.None,
+                moisture: calcMoisture(a[0], a[1]),
+                unlocked: false
             }
         }
 
@@ -85,9 +79,9 @@ interact.click = (x: number, y: number) => {
     } else {
         notice('区块信息', {
             text: [`坐标：${x1},${y1}`,
-                `含水量：${f.moisture.toFixed(2).slice(2)}`,
-                `土地类型：${getFieldConfig(f.moisture).innerText}`,
-                `作物：${CropsName[f.crop]}`],
+            `含水量：${f.moisture.toFixed(2).slice(2)}`,
+            `土地类型：${getFieldConfig(f.moisture).innerText}`,
+            `作物：${CropsName[f.crop]}`],
         })
     }
 }
