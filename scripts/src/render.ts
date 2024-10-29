@@ -34,9 +34,7 @@ export function initFields() {
             let x1 = x - Math.floor((translation.x + data.gamecvs.width / 2) / l);
             let y1 = y - Math.floor((translation.y + data.gamecvs.height / 2) / l);
             if (save.fields[`${x1},${y1}`] === undefined) continue;
-            let rand = data.noise.perlin2(x1 * r, y1 * r);
-            rand = (rand + 1) / 2;
-            data.fields.push(new Field(x1, y1, rand));
+            data.fields.push(new Field(x1, y1, save.fields[`${x1},${y1}`].moisture));
         }
     }
 }
