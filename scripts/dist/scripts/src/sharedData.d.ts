@@ -1,4 +1,5 @@
 import Noise from 'noisejs';
+import { Crops } from "./crops";
 interface FieldConfig {
     color: string;
     innerText: string;
@@ -48,6 +49,17 @@ export declare const data: {
     fields: Field[];
     noise: Noise;
     around: [number, number][];
+    atlas: {
+        canvas: HTMLCanvasElement;
+        ctx: CanvasRenderingContext2D | null;
+        edge: {
+            maxX: number;
+            maxY: number;
+            minX: number;
+            minY: number;
+        };
+        enable: boolean;
+    };
 };
 export declare const translation: {
     x: number;
@@ -63,14 +75,6 @@ export declare function rgbtohex(r: number, g: number, b: number): string;
 export declare function calcMoisture(f: Field): number;
 export declare function calcMoisture(x: number, y: number): number;
 export declare function calcMoisture(f: SavedFieldsData): number;
-export declare enum Crops {
-    None = 0,
-    Corn = 1
-}
-export declare const CropsName: {
-    0: string;
-    1: string;
-};
 export declare function base64(str: string): string;
 export declare function unbase64(str: string): string;
 export declare function initSaveData(saveData: object): boolean;
