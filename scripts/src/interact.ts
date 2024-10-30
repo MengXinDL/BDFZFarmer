@@ -117,6 +117,13 @@ class eventDetector {
     set scroll(callback: (delta: number, altKey: boolean) => void) {
         this._scroll.push(callback);
     }
+    get scroll() {
+        return (delta: number, altKey: boolean) => {
+            this._scroll.forEach((callback: (scale: number, altKey: boolean) => void) => {
+                callback(1 + delta / 100, altKey);
+            })
+        };
+    }
 }
 
 export const interact = new eventDetector();
