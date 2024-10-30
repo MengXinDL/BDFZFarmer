@@ -4,12 +4,14 @@ import {
     hextorgb, rgbtohex,
     save, initSaveData, base64, unbase64,
     calcMoisture,
-    Crops
+    getFieldConfig,
+    boxToPix,
 } from "./sharedData";
 import { interact } from "./interact";
 import notice from './notice'
 import version from '../../statics/version.json'
 import db from "./database";
+import { Crops } from "./crops";
 
 /**
  * Called when the page is loaded. Initializes the canvas and calls
@@ -27,7 +29,7 @@ window.onresize = function() {
 
 export function initFields() {
     data.fields = [];
-    let l = translation.scale * 50;
+    let l = translation.scale;
     let r = 1 / Math.PI / 2;
     for (let x = -1; x * l < data.gamecvs.width; x += 1) {
         for (let y = -1; y * l < data.gamecvs.height; y += 1) {
@@ -47,12 +49,13 @@ async function init(): Promise<void> {
 
     translation.x = 0;
     translation.y = 0;
-    translation.scale = 2;
+    translation.scale = 100;
     data.gamecvs.width = window.innerWidth;
     data.gamecvs.height = window.innerHeight;
     
     const ctx = data.gamecvs.getContext('2d') as CanvasRenderingContext2D;
-    ctx.font = `${10 * translation.scale}px sans-serif`;
+    ctx.font = `${translation.scale / 5}px sans-serif`;
+    ctx.imageSmoothingEnabled = false;
 
     let s;
     try {
@@ -91,17 +94,44 @@ async function init(): Promise<void> {
         }
         db.save.addData('save', save);
     }
-    initFields();
-
+    
+    updateAtlas();
     render();
 
+}
+
+export function updateAtlas() {
+    
+    data.atlas.ctx = data.atlas.canvas.getContext('2d') as CanvasRenderingContext2D;
+    let c = data.atlas.ctx;
+    let e = data.atlas.edge;
+    for(const i in save.fields){
+        let f = save.fields[i];
+        e.maxX = Math.max(e.maxX, f.x);
+        e.maxY = Math.max(e.maxY, f.y);
+        e.minX = Math.min(e.minX, f.x);
+        e.minY = Math.min(e.minY, f.y);
+    }
+    data.atlas.canvas.width = e.maxX - e.minX + 1;
+    data.atlas.canvas.height = e.maxY - e.minY + 1;
+
+    c.fillStyle = '#294f1d';
+    c.fillRect(0, 0, data.atlas.canvas.width, data.atlas.canvas.height);
+    for(const i in save.fields){
+        let f = save.fields[i];
+        let x = f.x - e.minX;
+        let y = f.y - e.minY;
+        if(f.unlocked) c.fillStyle = getFieldConfig(f.moisture).color;
+        else c.fillStyle = '#ffffff7f';
+        c.fillRect(x, y, 1, 1);
+    }
 }
 
 function resize(): void {
     data.gamecvs.width = window.innerWidth;
     data.gamecvs.height = window.innerHeight;
 
-    initFields();
+    
 
     render();
 }
@@ -120,7 +150,20 @@ export function render(): void {
     ctx.fillStyle = '#294f1d';
     ctx.fillRect(0, 0, w, h);
     
-    ctx.font = `${10 * translation.scale}px sans-serif`;
+    ctx.font = `${translation.scale / 5}px sans-serif`;
+
+    if(data.atlas.enable){
+        let { x, y } = boxToPix(data.atlas.edge.minX, data.atlas.edge.minY);
+        ctx.drawImage(data.atlas.canvas,
+            0, 0, data.atlas.canvas.width, data.atlas.canvas.height,
+            x, y,
+            data.atlas.canvas.width * translation.scale,
+            data.atlas.canvas.height * translation.scale,
+        );
+        return;
+    }
+
+    initFields();
 
     data.fields.forEach(f => f.render());
 
@@ -134,27 +177,39 @@ interact.move = (x: number, y: number) => {
     }
     translation.x += x;
     translation.y += y;
-    initFields();
+    
     render();
 }
 
-interact.scroll = (scale: number) => {
-
-    if (interact.pressed && interact.pressedElement !== data.gamecvs) {
+interact.scroll = (scale: number, altKey: boolean) => {
+    
+    if (!altKey && interact.pressed && interact.pressedElement !== data.gamecvs) {
         return;
     }
-    if (interact.curentElement !== data.gamecvs) {
+    if (!altKey && interact.curentElement !== data.gamecvs) {
         return;
     }
 
-    let s = translation.scale;
+    let s = 1 / translation.scale;
     translation.scale *= scale;
-    translation.scale = Math.max(0.1, translation.scale);
-    translation.scale = Math.min(10, translation.scale);
-    s = translation.scale / s;
+    translation.scale = Math.max(5, translation.scale);
+    translation.scale = Math.min(500, translation.scale);
+    s *= translation.scale;
     translation.x *= s;
     translation.y *= s;
-    initFields();
+    
+    data.atlas.enable = translation.scale < 25;
+
     render();
 }
 
+addEventListener('load', () => {
+    let bigger = document.getElementById('bigger') as HTMLButtonElement;
+    let smaller = document.getElementById('smaller') as HTMLButtonElement;
+    bigger.onclick = () => {
+        interact.scroll(50,true);
+    }
+    smaller.onclick = () => {
+        interact.scroll(-33,true);
+    }
+})
