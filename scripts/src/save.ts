@@ -3,7 +3,7 @@ import {
     base64, unbase64, initSaveData,
 } from "./sharedData";
 import {
-    render,
+    render, updateAtlas
 } from "./render";
 import notice from './notice'
 import LZString from 'lz-string';
@@ -49,7 +49,7 @@ addEventListener('load', () => {
                     }
                 } finally {
                     fileInput.value = '';
-                    
+                    updateAtlas();
                     render();
                 }
             };
