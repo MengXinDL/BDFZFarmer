@@ -4,16 +4,15 @@ import {
     data,
     Field,
     calcMoisture,
-    Crops, CropsName,
     getFieldConfig,
-    pixToBox
+    pixToBox,
 } from "./sharedData";
 import { interact } from "./interact";
 import {
-    render, initFields,
+    render, updateAtlas
 } from "./render";
 import notice from './notice'
-
+import { Crops, CropsConfig, getCropsOutput} from "./crops";
 
 
 addEventListener('load', () => {
@@ -22,7 +21,10 @@ addEventListener('load', () => {
         let d = 0;
         for (const f in save.fields) {
             if (!save.fields[f].unlocked) continue;
-            d += calcMoisture(save.fields[f]);
+            d += getCropsOutput(
+                save.fields[f].crop,
+                save.fields[f].moisture
+            );
         }
         save.money += d;
         if (mp) mp.innerText =
@@ -33,7 +35,7 @@ ${d.toFixed(2)}/s`;
 
 
 interact.click = (x: number, y: number) => {
-    if (translation.scale < 0.5) return;
+    if (translation.scale < 25) return;
 
     if (!interact.pressedElement || interact.pressedElement !== data.gamecvs) {
         return;
@@ -70,7 +72,7 @@ interact.click = (x: number, y: number) => {
             }
         }
 
-        initFields();
+        updateAtlas();        
         render();
     }
 
@@ -81,7 +83,9 @@ interact.click = (x: number, y: number) => {
             text: [`坐标：${x1},${y1}`,
             `含水量：${f.moisture.toFixed(2).slice(2)}`,
             `土地类型：${getFieldConfig(f.moisture).innerText}`,
-            `作物：${CropsName[f.crop]}`],
+            `作物：${CropsConfig[f.crop].name}`,
+            `每秒收入：${getCropsOutput(f.crop, f.moisture).toFixed(2)}`
+            ],
         })
     }
 }
@@ -89,10 +93,20 @@ interact.click = (x: number, y: number) => {
 addEventListener('load', () => {
     let home = document.getElementById('home') as HTMLButtonElement;
     home.onclick = () => {
-        translation.scale = 2;
+        translation.scale = 100;
         translation.x = 0;
         translation.y = 0;
-        initFields();
+        
+        render();
+    }
+    let thumbnail = document.getElementById('thumbnail') as HTMLButtonElement;
+    thumbnail.onclick = () => {
+        
+        let s = 5 / translation.scale;
+        translation.scale = 5;
+        translation.x *= s;
+        translation.y *= s;
+        
         render();
     }
 })

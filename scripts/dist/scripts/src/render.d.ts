@@ -1,4 +1,5 @@
 export declare function initFields(): void;
+export declare function updateAtlas(): void;
 /**
  * Draws the current state of the game on the canvas. This function is called
  * once per frame. It clears the canvas, sets the transformation matrix to

@@ -18,6 +18,7 @@ declare class eventDetector {
     set move(callback: (x: number, y: number) => void);
     set click(callback: (x: number, y: number) => void);
     set scroll(callback: (delta: number, altKey: boolean) => void);
+    get scroll(): (delta: number, altKey: boolean) => void;
 }
 export declare const interact: eventDetector;
 export {};

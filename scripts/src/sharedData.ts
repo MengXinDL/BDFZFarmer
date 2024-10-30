@@ -1,5 +1,6 @@
-import Noise from 'noisejs';    //引用noisejs
-import version  from '../../statics/version.json';  //引用版本信息
+import Noise from 'noisejs';
+import version  from '../../statics/version.json';
+import { Crops} from "./crops";
 
 interface FieldConfig {
     color: string;
@@ -84,7 +85,7 @@ export class box {
         }
 
         ctx.fillStyle = this.color;
-        if (translation.scale > 0.5) ctx.fillRect(this.x, this.y, this.width, this.height);
+        if (translation.scale > 25) ctx.fillRect(this.x, this.y, this.width, this.height);
         else ctx.fillRect(this.x, this.y, this.width, this.height);
 
         if (this.innerText === "") {
@@ -123,27 +124,26 @@ export class Field {
         this.moisture = moisture;
         this.basicColor = "#ffb400";
         let f = save.fields[`${x},${y}`];
-        console.log(f,moisture);
         if (f !== undefined) {
             this.moisture = f.moisture;
             this.unlocked = f.unlocked;
         }
         let txt = "";
-        if (translation.scale > 0.5) {
+        if (translation.scale > 25) {
             if (this.unlocked) {
                 txt = getFieldConfig(this.moisture).innerText;
             } else {
-                txt =
-`花费${Field.calcMoney(this)}
-${getFieldConfig(this.moisture).innerText}
-`;
+                let m = Field.calcMoney(this);
+                if (m < 10 ** 5) txt =`花费${m}`;
+                else if(m < 10 ** 7) txt = `花费${Math.floor(m / 10 ** 3)}k`;
+                else txt = `花费${Math.floor(m / 10 ** 6)}M`;
             }
         }
         let p = boxToPix(this.x, this.y);
         this.box = new box(
             p.x, p.y,
-            translation.scale * 50,
-            translation.scale * 50,
+            translation.scale,
+            translation.scale,
             this.color(),
             txt
         );
@@ -163,10 +163,7 @@ ${getFieldConfig(this.moisture).innerText}
         if (x === undefined || y === undefined) {
             throw new Error("x or y is undefined when calcMoney");
         }
-        return Math.floor(
-            (f + 1) *
-            (x * x + y * y) ** 1.3
-        );
+        return Math.floor((x * x + y * y) ** 1.4);
     }
 }
 
@@ -202,6 +199,17 @@ export const data: {
     fields: Field[],
     noise: Noise,
     around: [number, number][],
+    atlas: {
+        canvas: HTMLCanvasElement,
+        ctx: CanvasRenderingContext2D | null,
+        edge: {
+            maxX: number,
+            maxY: number
+            minX: number,
+            minY: number
+        },
+        enable: boolean
+    }
 } = {
     gamecvs: document.getElementById('game') as HTMLCanvasElement,
     fields: [],
@@ -216,6 +224,17 @@ export const data: {
         [0, 1],
         [1, 1]
     ],
+    atlas: {
+        canvas: document.createElement('canvas') as HTMLCanvasElement,
+        ctx: null,
+        edge: {
+            maxX: 0,
+            maxY: 0,
+            minX: 0,
+            minY: 0
+        },
+        enable: false,
+    }
 };
 data.noise = new Noise(save.seed)
 console.log(save.seed);
@@ -250,7 +269,6 @@ export function calcMoisture(f: Field): number;
 export function calcMoisture(x: number, y: number): number;
 export function calcMoisture(f: SavedFieldsData): number
 export function calcMoisture(x: number | SavedFieldsData | Field, y?: number): number {
-    let l = translation.scale * 50;
     let r = 1 / Math.PI / 2;
     if (typeof x === "number") {
         if (y === undefined) return 0;
@@ -262,14 +280,7 @@ export function calcMoisture(x: number | SavedFieldsData | Field, y?: number): n
     }
 }
 
-export enum Crops {
-    None,
-    Corn,
-}
-export const CropsName = {
-    [Crops.None]: "无",
-    [Crops.Corn]: "小麦"
-}
+
 
 export function base64(str: string): string {
     return btoa(unescape(encodeURIComponent(str)));
@@ -328,18 +339,18 @@ export function pixToBox(x: number, y: number) {
     return {
         x: Math.floor(
             (x - translation.x - window.innerWidth / 2) /
-            translation.scale / 50
+            translation.scale
         ),
         y: Math.floor(
             (y - translation.y - window.innerHeight / 2) /
-            translation.scale / 50
+            translation.scale
         ),
     }
 }
 
 export function boxToPix(x: number, y: number) {
     return {
-        x: x * 50 * translation.scale + translation.x + window.innerWidth / 2,
-        y: y * 50 * translation.scale + translation.y + window.innerHeight / 2,
+        x: x * translation.scale + translation.x + window.innerWidth / 2,
+        y: y * translation.scale + translation.y + window.innerHeight / 2,
     }
 }
