@@ -94,7 +94,7 @@ interact.click = (x: number, y: number) => {
 addEventListener('load', () => {
     let home = document.getElementById('home') as HTMLButtonElement;
     home.onclick = () => {
-        translation.scale = 2;
+        translation.scale = 100;
         translation.x = 0;
         translation.y = 0;
         
