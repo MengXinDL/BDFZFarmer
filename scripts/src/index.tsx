@@ -79,6 +79,7 @@ interact.click = (x: number, y: number) => {
     if (!f.unlocked) {
         buyField();
     } else {
+        f.crop = Crops.Cockscomb
         notice('区块信息', {
             text: [`坐标：${x1},${y1}`,
             `含水量：${f.moisture.toFixed(2).slice(2)}`,
