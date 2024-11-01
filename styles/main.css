@@ -24,10 +24,11 @@ body {
 
 p#money {
     color: aliceblue;
+    margin: 10px;
 }
 
 .control-container {
-    width: 300px;
+    width: 200px;
     height: 100vh;
     position: absolute;
     display: flex;
@@ -37,7 +38,6 @@ p#money {
     z-index: 1;
     background-color: rgba(0, 0, 0, 0.7);
     justify-content: flex-start;
-    border: 10px solid rgba(0, 0, 0, 0);
 }
 
 .box-container {
@@ -45,6 +45,7 @@ p#money {
     justify-content: flex-start;
     left: 10px;
     top: 10px;
+    margin: 10px;
 }
 
 .notice {
@@ -81,4 +82,5 @@ p#money {
     width: calc(100% - 20px);
     overflow-x: hidden;
     overflow-y: auto;
+    white-space: pre-wrap;
 }

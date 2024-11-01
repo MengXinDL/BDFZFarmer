@@ -44,17 +44,20 @@ function Notice(
 function showNotice(title: string, contents:{
     text?: string | string[],
     children?: React.JSX.Element | React.JSX.Element[]
-}) {
+}, split: boolean = true) {
     const root = createRoot(document.getElementById('root') as HTMLElement);
     if (typeof contents.text === 'string') {
         contents.text = [contents.text];
     }
+    if (!split) {
+        contents.text = [contents.text?.join('\n') as string];
+    }
     let n = contents.text ? contents.text.map((c, index) => <p key={index}>{c}</p>) : [];
     if(contents.children !== undefined){
         if(contents.children instanceof Array){
-            let c = <div className='box-container' children={
-                contents.children.map((c, index) => c.key == undefined ? index.toString() : c.key, [])
-            }></div>;
+            contents.children.forEach((c, index) => c.key == undefined ? index.toString() : c.key, [])
+            let c = <div className='box-container' children={contents.children}></div>;
+            n.push(c)
         }
         else {
             contents.children.key = n.length.toString();

@@ -1,5 +1,5 @@
 import Noise from 'noisejs';
-import { Crops } from "./crops";
+import { SavedFieldsData } from "./save";
 interface FieldConfig {
     color: string;
     innerText: string;
@@ -27,24 +27,8 @@ export declare class Field {
     render(): void;
     color(): string;
     static calcMoney(f: number | Field, x?: number, y?: number): number;
+    static getFieldInformation(f: Field | SavedFieldsData): string[];
 }
-interface SavedFieldsData {
-    x: number;
-    y: number;
-    crop: Crops;
-    unlocked: boolean;
-    moisture: number;
-}
-export declare const VERSION: string;
-export declare const save: {
-    fields: {
-        [pos: string]: SavedFieldsData;
-    };
-    money: number;
-    seed: number;
-    version: string;
-    enableCrops: Crops[];
-};
 export declare const data: {
     gamecvs: HTMLCanvasElement;
     fields: Field[];
@@ -78,7 +62,6 @@ export declare function calcMoisture(x: number, y: number): number;
 export declare function calcMoisture(f: SavedFieldsData): number;
 export declare function base64(str: string): string;
 export declare function unbase64(str: string): string;
-export declare function initSaveData(saveData: object): boolean;
 export declare function pixToBox(x: number, y: number): {
     x: number;
     y: number;

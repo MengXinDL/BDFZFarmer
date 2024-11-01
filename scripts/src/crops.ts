@@ -58,9 +58,6 @@ Object.values(CropConfigs).forEach(c =>
 );
 
 export function getCropsOutput(crop: Crops, moisture: number): number {
-    //-----not done yet------
-    return moisture;
-    //-----------------------
     function Gaussian(x: number, bias: number, edge: number): number {
         let d = (bias + 2) * (x - edge) / (bias - edge) - 2;
         return Math.exp(- ((d - bias) ** 2));

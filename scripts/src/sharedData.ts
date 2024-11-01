@@ -1,6 +1,6 @@
 import Noise from 'noisejs';
-import version  from '../../statics/version.json';
-import { Crops} from "./crops";
+import { Crops, CropConfigs, getCropsOutput } from "./crops";
+import { save, SavedFieldsData } from "./save";
 
 interface FieldConfig {
     color: string;
@@ -132,6 +132,7 @@ export class Field {
         if (translation.scale > 25) {
             if (this.unlocked) {
                 txt = getFieldConfig(this.moisture).innerText;
+                if (f.crop !== Crops.None) txt += `\n${CropConfigs[f.crop].name}`
             } else {
                 let m = Field.calcMoney(this);
                 if (m < 10 ** 5) txt =`花费${m}`;
@@ -165,36 +166,23 @@ export class Field {
         }
         return Math.floor((x * x + y * y) ** 1.4);
     }
+    static getFieldInformation(f: Field | SavedFieldsData): string[] {
+        let crop = Crops.None;
+        if (!(f instanceof Field)) {
+            crop = f.crop;
+        }
+        return [`坐标：${f.x},${f.y}`,
+            `含水量：${f.moisture.toFixed(2).slice(2)}`,
+            `土地类型：${getFieldConfig(f.moisture).innerText}`,
+            `作物：${CropConfigs[crop].name}`,
+            `每秒收入：${getCropsOutput(crop, f.moisture).toFixed(2)}`
+        ]
+    }
 }
 
 
 // export const gamecvs: HTMLCanvasElement = document.getElementById('game') as HTMLCanvasElement;
 // export let boxs: box[] = [];
-
-interface SavedFieldsData {
-    x: number,
-    y: number,
-    crop: Crops,
-    unlocked: boolean,
-    moisture: number
-}
-
-export const VERSION = version.version;
-export const save: {
-    fields: {
-        [pos: string]: SavedFieldsData
-    },
-    money: number,
-    seed: number,
-    version: string,
-    enableCrops: Crops[],
-} = {
-    fields: {},
-    money: 0,
-    seed: Math.floor(Math.random() * 1000000000),
-    version: VERSION,
-    enableCrops: [Crops.None, Crops.Cockscomb]
-}
 
 export const data: {
     gamecvs: HTMLCanvasElement,
@@ -290,51 +278,6 @@ export function base64(str: string): string {
 
 export function unbase64(str: string): string {
     return decodeURIComponent(escape(atob(str)));
-}
-export function initSaveData(saveData: object) {
-    let d = JSON.parse(JSON.stringify(saveData));
-    let s = false;
-
-    data.noise.seed(d.seed || save.seed);
-    console.log(`readed version ${d.version ? d.version : "unknown"}`);
-    console.log(`current version ${VERSION}`);
-    s = d.version == VERSION;
-    d.version = VERSION;
-
-    for (const [key, value] of Object.entries(saveData)) {
-
-        //to support version 0.2.11 data
-        if (key === "fields") {
-            if (value instanceof Array) {
-                let v: { [pos: string]: SavedFieldsData } = {};
-                for (const f of value as SavedFieldsData[]) {
-                    v[`${f.x},${f.y}`] = f;
-                }
-                d[key] = v;
-            }
-            for (let f in d[key]) {
-                if (!("moisture" in d[key][f]) || (d[key][f].moisture === undefined)) d[key][f].moisture = calcMoisture(d[key][f].x, d[key][f].y);
-                if (!("unlocked" in d[key][f]) || (d[key][f].unlocked === undefined)) d[key][f].unlocked = true;
-                if (!("crop" in d[key][f]) || (d[key][f].crop === undefined)) d[key][f].crop = Crops.None;
-                if (d[key][f].unlocked) {
-                    for (const a of data.around) {
-                        let x = a[0] + d[key][f].x;
-                        let y = a[1] + d[key][f].y;
-                        if (!d[key][`${x},${y}`]) {
-                            d[key][`${x},${y}`] = {
-                                x, y,
-                                crop: Crops.None,
-                                unlocked: false,
-                                moisture: calcMoisture(x, y)
-                            }
-                        }
-                    }
-                }
-            }
-        }
-    }
-    Object.assign(save, d);
-    return s;
 }
 
 export function pixToBox(x: number, y: number) {

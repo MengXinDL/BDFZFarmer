@@ -1,10 +1,8 @@
 import {
-    save,
     translation,
     data,
     Field,
     calcMoisture,
-    getFieldConfig,
     pixToBox,
 } from "./sharedData";
 import { interact } from "./interact";
@@ -12,7 +10,10 @@ import {
     render, updateAtlas
 } from "./render";
 import notice from './notice'
-import { Crops, CropConfigs, getCropsOutput} from "./crops";
+import { Crops, getCropsOutput} from "./crops";
+import { save } from "./save";
+import { createRoot } from "react-dom/client";
+import { useState } from "react";
 
 
 addEventListener('load', () => {
@@ -43,10 +44,8 @@ interact.click = (x: number, y: number) => {
 
     let { x: x1, y: y1 } = pixToBox(x, y);
 
-    console.log(x1, y1);
-
     let f = save.fields[`${x1},${y1}`];
-    if (save.fields[`${x1},${y1}`] === undefined) {
+    if (f === undefined) {
         return;
     }
 
@@ -75,22 +74,16 @@ interact.click = (x: number, y: number) => {
         updateAtlas();        
         render();
     }
-
+    console.log(currentMode)
     if (!f.unlocked) {
         buyField();
-    } else {
-        f.crop = Crops.Cockscomb
+    } else if(currentMode === Mode.查看) {
         notice('区块信息', {
-            text: [`坐标：${x1},${y1}`,
-            `含水量：${f.moisture.toFixed(2).slice(2)}`,
-            `土地类型：${getFieldConfig(f.moisture).innerText}`,
-            `作物：${CropConfigs[f.crop].name}`,
-            `每秒收入：${getCropsOutput(f.crop, f.moisture).toFixed(2)}`
-            ],
-            children: [
-                <button onClick={() => console.log(1)}>种地</button>
-            ]
-        })
+            text: Field.getFieldInformation(f),
+        }, false)
+    } else if(currentMode === Mode.种植) {
+        f.crop = Crops.Cockscomb;
+        render();
     }
 }
 
@@ -115,4 +108,22 @@ addEventListener('load', () => {
         
         render();
     }
+})
+enum Mode {
+    查看,
+    种植,
+}
+let currentMode = Mode.查看;
+function ModeSelector() {
+    let [mode, setMode] = useState(Mode.查看);
+    function switchMode() {
+        currentMode = (mode + 1) % 2;
+        setMode((mode + 1) % 2);
+    }
+    return (<button onClick={switchMode}>切换模式：{Mode[mode]}</button>)
+}
+
+addEventListener('load', () => {
+    let changeMode = createRoot(document.getElementById('switch') as HTMLElement);
+    changeMode.render(<ModeSelector/>)
 })

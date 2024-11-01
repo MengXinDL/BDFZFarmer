@@ -1,8 +1,7 @@
 import {
-    box, data,
+    data,
     translation, Field,
-    hextorgb, rgbtohex,
-    save, initSaveData, base64, unbase64,
+    unbase64,
     calcMoisture,
     getFieldConfig,
     boxToPix,
@@ -12,6 +11,8 @@ import notice from './notice'
 import version from '../../statics/version.json'
 import db from "./database";
 import { Crops } from "./crops";
+import { initSaveData, save } from "./save";
+
 
 /**
  * Called when the page is loaded. Initializes the canvas and calls
