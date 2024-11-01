@@ -100,6 +100,7 @@ addEventListener('load', () => {
         translation.scale = 100;
         translation.x = 0;
         translation.y = 0;
+        data.atlas.enable = false;
         
         render();
     }

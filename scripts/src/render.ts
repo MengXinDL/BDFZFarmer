@@ -101,7 +101,7 @@ async function init(): Promise<void> {
 }
 
 export function updateAtlas() {
-    
+    (data.gamecvs.getContext('2d') as CanvasRenderingContext2D).imageSmoothingEnabled = false;
     data.atlas.ctx = data.atlas.canvas.getContext('2d') as CanvasRenderingContext2D;
     let c = data.atlas.ctx;
     let e = data.atlas.edge;
