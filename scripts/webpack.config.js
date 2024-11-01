@@ -2,13 +2,6 @@ let path = require('path');
 
 module.exports = {
     entry: [
-        './src/save.ts',
-        './src/sharedData.ts',
-        './src/render.ts',
-        './src/interact.ts',
-        './src/database.ts',
-
-        './src/notice.tsx',
         './src/index.tsx',
     ],
     output: {
@@ -50,5 +43,5 @@ module.exports = {
         'react': 'React',
         'react-dom/client': 'ReactDOM',
         'lz-string': 'LZString',
-    }
+    },
 }

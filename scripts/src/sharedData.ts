@@ -187,11 +187,13 @@ export const save: {
     money: number,
     seed: number,
     version: string,
+    enableCrops: Crops[],
 } = {
     fields: {},
     money: 0,
     seed: Math.floor(Math.random() * 1000000000),
-    version: VERSION
+    version: VERSION,
+    enableCrops: [Crops.None, Crops.Cockscomb]
 }
 
 export const data: {

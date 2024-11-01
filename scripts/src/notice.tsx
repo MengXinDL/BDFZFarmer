@@ -43,7 +43,7 @@ function Notice(
 }
 function showNotice(title: string, contents:{
     text?: string | string[],
-    children?: React.JSX.Element
+    children?: React.JSX.Element | React.JSX.Element[]
 }) {
     const root = createRoot(document.getElementById('root') as HTMLElement);
     if (typeof contents.text === 'string') {
@@ -51,8 +51,15 @@ function showNotice(title: string, contents:{
     }
     let n = contents.text ? contents.text.map((c, index) => <p key={index}>{c}</p>) : [];
     if(contents.children !== undefined){
-        contents.children.key = n.length.toString();
-        n.push(contents.children)
+        if(contents.children instanceof Array){
+            let c = <div className='box-container' children={
+                contents.children.map((c, index) => c.key == undefined ? index.toString() : c.key, [])
+            }></div>;
+        }
+        else {
+            contents.children.key = n.length.toString();
+            n.push(contents.children)
+        }
     }
     root.render(<Notice title={title} content="" >{n}</Notice>);
     let e = evt.on('notice-close', () => {

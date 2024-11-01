@@ -12,7 +12,7 @@ import {
     render, updateAtlas
 } from "./render";
 import notice from './notice'
-import { Crops, CropsConfig, getCropsOutput} from "./crops";
+import { Crops, CropConfigs, getCropsOutput} from "./crops";
 
 
 addEventListener('load', () => {
@@ -84,9 +84,12 @@ interact.click = (x: number, y: number) => {
             text: [`坐标：${x1},${y1}`,
             `含水量：${f.moisture.toFixed(2).slice(2)}`,
             `土地类型：${getFieldConfig(f.moisture).innerText}`,
-            `作物：${CropsConfig[f.crop].name}`,
+            `作物：${CropConfigs[f.crop].name}`,
             `每秒收入：${getCropsOutput(f.crop, f.moisture).toFixed(2)}`
             ],
+            children: [
+                <button onClick={() => console.log(1)}>种地</button>
+            ]
         })
     }
 }
