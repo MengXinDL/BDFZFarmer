@@ -110,6 +110,7 @@ addEventListener('load', () => {
         translation.scale = 5;
         translation.x *= s;
         translation.y *= s;
+        data.atlas.enable = true;
         
         render();
     }

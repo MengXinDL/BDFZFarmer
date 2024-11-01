@@ -3,6 +3,7 @@ let path = require('path');
 module.exports = {
     entry: [
         './src/index.tsx',
+        './src/save.ts'
     ],
     output: {
         filename: 'bundle.js',
