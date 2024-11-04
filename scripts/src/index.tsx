@@ -27,11 +27,11 @@ addEventListener('load', () => {
                 save.fields[f].moisture
             );
         }
-        save.money += d;
+        save.money += d / 4;
         if (mp) mp.innerText =
-            `money: ${save.money.toFixed(2)}
+            `货币: ${save.money.toFixed(2)}
 ${d.toFixed(2)}/s`;
-    }, 1000)
+    }, 250)
 })
 
 
@@ -66,7 +66,7 @@ interact.click = (x: number, y: number) => {
                 x: x2,
                 y: y2,
                 crop: Crops.None,
-                moisture: calcMoisture(a[0], a[1]),
+                moisture: calcMoisture(x2, y2),
                 unlocked: false
             }
         }
@@ -74,7 +74,6 @@ interact.click = (x: number, y: number) => {
         updateAtlas();        
         render();
     }
-    console.log(currentMode)
     if (!f.unlocked) {
         buyField();
     } else if(currentMode === Mode.查看) {

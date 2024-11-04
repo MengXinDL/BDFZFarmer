@@ -168,10 +168,20 @@ export function initSaveData(saveData: object) {
         })
     }
 
+    function v1_1_0() {
+        if (!("version" in saveData)) return;
+        let v = saveData["version"];
+        if (!(typeof v === "string") || !(v.startsWith("1.1."))) return;
+        if(!("fields" in saveData)) return;
+        let value = d["fields"] as { [pos: string]: SavedFieldsData }, key = 'fields';
+        Object.keys(value).forEach((k)=> {
+            value[k].moisture = calcMoisture(value[k].x, value[k].y);
+        })
+    }
 
     v0_(); // to support version 0.*.* Array like data
     v1_0_(); // to clear Crockscombs from version 1.0.* 
-
+    v1_1_0();
 
     console.log('parsed data done\nbefore:');
     console.log(saveData);

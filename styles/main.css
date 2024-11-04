@@ -22,7 +22,7 @@ body {
     z-index: -1;
 }
 
-p#money {
+.content {
     color: aliceblue;
     margin: 10px;
 }
