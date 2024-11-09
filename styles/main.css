@@ -84,3 +84,20 @@ body {
     overflow-y: auto;
     white-space: pre-wrap;
 }
+
+.tip {
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 10px;
+    color: white;
+    height: 20px;
+    padding: 5px;
+    margin: 3px;
+    transform: translate(-50%, 0);
+}
+div#tip {
+    position: absolute;
+    top: 0;
+    left: 50vw;
+    display: flex;
+    flex-direction: column;
+}

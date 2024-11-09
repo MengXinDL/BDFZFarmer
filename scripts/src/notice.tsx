@@ -1,9 +1,22 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import evt from './event';
+
+const roots:{
+    notice: null | ReturnType<typeof createRoot>;
+    tip: null | ReturnType<typeof createRoot>;
+} = {
+    notice: null,
+    tip: null
+}
+addEventListener('load', () => {
+    roots.notice = createRoot(document.getElementById('notice') as HTMLElement);
+    roots.tip = createRoot(document.getElementById('tip') as HTMLElement);
+})
+
 function Notice(
     {title, content, children}:
-    {title: string, content?: string, children?: React.JSX.Element[]}
+    {title: string | React.JSX.Element, content?: string, children?: React.JSX.Element[]}
 ) {
     let notice = <div className='notice'>
         <div className='notice-title'>
@@ -41,11 +54,11 @@ function Notice(
     </div>;
     return notice;
 }
-function showNotice(title: string, contents:{
+export function showNotice(title: string | React.JSX.Element, contents:{
     text?: string | string[],
     children?: React.JSX.Element | React.JSX.Element[]
 }, split: boolean = true) {
-    const root = createRoot(document.getElementById('root') as HTMLElement);
+    roots.notice = roots.notice || createRoot(document.getElementById('notice') as HTMLElement);
     if (typeof contents.text === 'string') {
         contents.text = [contents.text];
     }
@@ -64,10 +77,41 @@ function showNotice(title: string, contents:{
             n.push(contents.children)
         }
     }
-    root.render(<Notice title={title} content="" >{n}</Notice>);
+    roots.notice.render(<Notice title={title} content="" >{n}</Notice>);
     let e = evt.on('notice-close', () => {
-        root.unmount();
+        roots.notice?.render(null);
         evt.remove(e.id);
     });
 }
-export default showNotice;
+
+let tips: {
+    content: string,
+    opacity: number
+}[] = [];
+setInterval(() => {
+    roots.tip = roots.tip || createRoot(document.getElementById('tip') as HTMLElement);
+    let del: {
+        content: string,
+        opacity: number
+    }[] = [];
+    tips.forEach($ => {
+        $.opacity -= 0.05;
+        if($.opacity < 0)del.push($);
+    })
+    tips = tips.filter($ => !del.includes($));
+    roots.tip.render(
+        <>{
+            tips.map(($, index) => (
+                <span className='tip' key={index} style={{opacity: $.opacity}}>
+                    {$.content}
+                </span>
+            ))
+        }</>
+    );
+}, 20)
+export function showTip(content: string) {
+    tips.push({
+        content,
+        opacity: 3
+    });
+}

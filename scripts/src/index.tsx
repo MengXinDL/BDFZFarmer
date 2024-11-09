@@ -10,7 +10,7 @@ import { interact } from "./interact";
 import {
     render, updateAtlas
 } from "./render";
-import notice from './notice'
+import { showNotice, showTip } from './notice'
 import {
     CropConfigs, Crops, CropRarityConfigs,
     getCropsOutput
@@ -63,9 +63,8 @@ interact.click = (x: number, y: number) => {
     function buyField() {
         let m = Field.calcMoney(f.moisture, f.x, f.y);
         if (m > save.money) {
-            notice('你钱不够', {
-                text: [`需要${m.toFixed(2)}`, `但你只有${save.money.toFixed(2)}`]
-            });
+            showTip(`需要${m.toFixed(2)}，但你只有${save.money.toFixed(2)}`)
+            console.log(`需要${m.toFixed(2)}，但你只有${save.money.toFixed(2)}`);
             return;
         }
         save.money -= m;
@@ -89,7 +88,7 @@ interact.click = (x: number, y: number) => {
     if (!f.unlocked) {
         buyField();
     } else if (Date.now() - interact.pressTime > 500) {
-        notice('区块信息', {
+        showNotice('区块信息', {
             text: Field.getFieldInformation(f),
         }, false)
     } else if (currentMode === Mode.种植) {
@@ -150,8 +149,21 @@ function Seeds() {
     save.seeds.forEach((s, i) => {
         let cnt = s.count;
         box.push(
-            <span style={{ color: CropRarityConfigs[CropConfigs[s.type].rarity].color }} key={i}>
+            <span style={{ color: CropRarityConfigs[CropConfigs[s.type].rarity].color, margin: '5px' }} key={i}>
                 {CropConfigs[s.type].name}: {s.count === Infinity ? '无限' : `${s.count.toFixed(0)}`}
+                <button onClick={() => {
+                    let cc = CropConfigs[s.type];
+                    let rc = CropRarityConfigs[cc.rarity];
+                    showNotice(<><span style={{ color: rc.color }}>{cc.name}</span>种子信息</>, {
+                        text: [
+                            `名称：${cc.name}`,
+                            `前置植物：${cc.foreground.length === 0 ? '无' : cc.foreground.map(f => CropConfigs[f].name).join(',')}`,
+                            `产量：${cc.basicOutput}`,
+                            `稀有度：${rc.name}`,
+                            `介绍：${cc.introduction}`,
+                        ]
+                    }, false)
+                }}>查看详情</button>
                 <br />
                 <button onClick={() => { s.mode = 1 - s.mode }}>{SeedMode[s.mode] + '模式'}</button>
                 <button

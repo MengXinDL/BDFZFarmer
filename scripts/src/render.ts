@@ -7,7 +7,7 @@ import {
     boxToPix,
 } from "./sharedData";
 import { interact } from "./interact";
-import notice from './notice'
+import {showNotice} from './notice'
 import version from '../../statics/version.json'
 import db from "./database";
 import { Crops } from "./crops";
@@ -68,13 +68,13 @@ async function init(): Promise<void> {
     if (localStorage.getItem('save')) {
         let _s = localStorage.getItem('save') as string;
         if(! initSaveData(JSON.parse(unbase64(_s)))){
-            notice(`新版本：${version.version}!`, { text: version.details })
+            showNotice(`新版本：${version.version}!`, { text: version.details })
         }
         db.save.addData('save', save);
         localStorage.removeItem('save');
     } else if (s !== null) {
         if(! initSaveData(s)){
-            notice(`新版本：${version.version}!`, { text: version.details })
+            showNotice(`新版本：${version.version}!`, { text: version.details })
         }
     } else {
         save.fields['0,0'] = {

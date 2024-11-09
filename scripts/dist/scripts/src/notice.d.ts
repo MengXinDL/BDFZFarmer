@@ -1,6 +1,6 @@
 import * as React from 'react';
-declare function showNotice(title: string, contents: {
+export declare function showNotice(title: string | React.JSX.Element, contents: {
     text?: string | string[];
     children?: React.JSX.Element | React.JSX.Element[];
 }, split?: boolean): void;
-export default showNotice;
+export declare function showTip(content: string): void;

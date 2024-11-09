@@ -2,7 +2,7 @@
 import {
     render, updateAtlas
 } from "./render";
-import notice from './notice'
+import {showNotice} from './notice'
 import LZString from 'lz-string';
 import db from "./database";
 import { version } from "../../statics/version.json";
@@ -41,7 +41,7 @@ addEventListener('load', () => {
                     try {
                         initSaveData(JSON.parse(unbase64(new TextDecoder('ascii').decode(content))));
                     } catch (error2) {
-                        notice(
+                        showNotice(
                             '无法读取的存档',
                             {
                                 text: [
