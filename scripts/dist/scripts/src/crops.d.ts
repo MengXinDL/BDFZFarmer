@@ -13,6 +13,7 @@ interface CropConfig {
         hi: number;
     };
     basicOutput: number;
+    seedOutput: number;
     rarity: CropRarity;
     foreground: Crops[];
     knowledge: number;
@@ -27,6 +28,7 @@ declare class Crop implements CropConfig {
         hi: number;
     };
     basicOutput: number;
+    seedOutput: number;
     rarity: CropRarity;
     foreground: Crops[];
     knowledge: number;
@@ -36,7 +38,7 @@ declare class Crop implements CropConfig {
         lo: number;
         mid: number;
         hi: number;
-    }, basicOutput: number, rarity: CropRarity, foreground: Crops[], knowledge: number, introduction: string);
+    }, basicOutput: number, seedOutput: number, rarity: CropRarity, foreground: Crops[], knowledge: number, introduction: string);
 }
 export declare enum CropRarity {
     Common = 0,

@@ -4,6 +4,7 @@ import {
     Field,
     calcMoisture,
     pixToBox,
+    parseNumber
 } from "./sharedData";
 import { interact } from "./interact";
 import {
@@ -17,7 +18,6 @@ import {
 import { save, SeedMode } from "./save";
 import { createRoot } from "react-dom/client";
 import { useState } from "react";
-import { createTypeReferenceDirectiveResolutionCache } from "typescript";
 
 let currentCrop = Crops.None;
 addEventListener('load', () => {
@@ -30,16 +30,16 @@ addEventListener('load', () => {
         for (const f in save.fields) {
             let f1 = save.fields[f];
             if (!f1.unlocked) continue;
-            if (mf.includes(f1.crop)) d += f1.output;
-            else upd[f1.crop] = (upd[f1.crop] || 0) + getCropsOutput(f1.crop, f1.moisture);
+            if (mf.includes(f1.crop)) d += f1.output * CropConfigs[f1.crop].basicOutput;
+            else upd[f1.crop] = (upd[f1.crop] || 0) + getCropsOutput(f1.crop, f1.moisture) * CropConfigs[f1.crop].seedOutput;
         }
         for (let i in save.seeds) {
             if (save.seeds[i].type in upd) save.seeds[i].count += upd[save.seeds[i].type] / 4;
         }
         save.money += d / 4;
         if (mp) mp.innerText =
-            `货币: ${save.money.toFixed(2)}
-${d.toFixed(2)}/s`;
+            `货币: ${parseNumber(save.money, 2)}
+${parseNumber(d, 2)}/s`;
 
         sd.render(<Seeds />)
     }, 250)
@@ -98,7 +98,7 @@ interact.click = (x: number, y: number) => {
         if (s.count < 1) return;
         s.count -= 1;
         f.crop = currentCrop;
-        f.output = getCropsOutput(f.crop, f.moisture) * CropConfigs[f.crop].basicOutput;
+        f.output = getCropsOutput(f.crop, f.moisture);
         render();
     }
 }

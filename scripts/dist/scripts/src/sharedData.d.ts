@@ -70,4 +70,10 @@ export declare function boxToPix(x: number, y: number): {
     x: number;
     y: number;
 };
+export declare const collectionCalc: {
+    union: (arr1: any[], arr2: any[]) => any[];
+    difference: (arr1: any[], arr2: any[]) => any[];
+    intersection: (arr1: any[], arr2: any[]) => any[];
+};
+export declare function parseNumber(num: number, toFixed?: number): string;
 export {};

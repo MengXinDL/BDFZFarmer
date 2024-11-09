@@ -95,6 +95,7 @@ export interface SavedFieldsData {
     x: number,
     y: number,
     crop: Crops,
+    level: number,
     output: number,
     unlocked: boolean,
     moisture: number
@@ -175,7 +176,8 @@ export function initSaveData(saveData: object) {
             if (!("moisture" in field) || (field.moisture === undefined)) field.moisture = calcMoisture(field.x, field.y);
             if (!("unlocked" in field) || (field.unlocked === undefined)) field.unlocked = true;
             if (!("crop" in field) || (field.crop === undefined)) field.crop = Crops.None;
-            if (!("output" in field) || (field.output === undefined)) field.output = getCropsOutput(field.crop, field.moisture) * CropConfigs[field.crop as Crops].basicOutput;
+            field.output = getCropsOutput(field.crop, field.moisture);
+            if (!("level" in field) || (field.level === undefined)) field.level = 0;
             if (field.unlocked) {
                 for (const a of data.around) {
                     let x = a[0] + field.x;
@@ -192,11 +194,17 @@ export function initSaveData(saveData: object) {
             }
         }
     }
+    
+    function correctSeeds() {
+        let key = 'seeds';
+        if (!("seeds" in saveData)) d[key] = [{type: Crops.None, count: Infinity, mode: SeedMode.储存}, {type: Crops.Cockscomb, count: 1, mode: SeedMode.售卖}];
+    }
 
     v0_(); // to support version 0.*.* Array like data
     v1_0_(); // to clear Crockscombs from version 1.0.* 
     v1_1_0(); // to fix moisture
     correctField(); // to initialize uninitialized fields config
+    correctSeeds(); // to initialize uninitialized seeds
 
     console.log('parsed data done\nbefore:');
     console.log(saveData);

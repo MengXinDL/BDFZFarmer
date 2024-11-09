@@ -82,6 +82,7 @@ async function init(): Promise<void> {
             y: 0,
             crop: Crops.None,
             output: 0,
+            level: 0,
             unlocked: true,
             moisture: calcMoisture(0, 0)
         }
@@ -91,6 +92,7 @@ async function init(): Promise<void> {
                 y: a[1],
                 crop: Crops.None,
                 output: 0,
+                level: 0,
                 unlocked: false,
                 moisture: calcMoisture(a[0], a[1])
             }

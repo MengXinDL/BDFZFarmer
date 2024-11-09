@@ -135,9 +135,7 @@ export class Field {
                 if (f.crop !== Crops.None) txt += `\n${CropConfigs[f.crop].name}`
             } else {
                 let m = Field.calcMoney(this);
-                if (m < 10 ** 5) txt =`花费${m}`;
-                else if(m < 10 ** 7) txt = `花费${Math.floor(m / 10 ** 3)}k`;
-                else txt = `花费${Math.floor(m / 10 ** 6)}M`;
+                txt = `花费${parseNumber(m)}`;
             }
         }
         let p = boxToPix(this.x, this.y);
@@ -175,7 +173,7 @@ export class Field {
             `含水量：${f.moisture.toFixed(2).slice(2)}`,
             `土地类型：${getFieldConfig(f.moisture).innerText}`,
             `作物：${CropConfigs[crop].name}`,
-            `每秒收入：${f.output.toFixed(2)}`
+            `每秒收入：${(f.output * CropConfigs[crop].basicOutput).toFixed(2)}`
         ]
     }
 }
@@ -298,4 +296,19 @@ export function boxToPix(x: number, y: number) {
         x: x * translation.scale + translation.x + window.innerWidth / 2,
         y: y * translation.scale + translation.y + window.innerHeight / 2,
     }
+}
+
+export const collectionCalc = {
+    union: (arr1: any[], arr2: any[]) => [...arr1, ...arr2.filter((item: any) => !arr1.includes(item))],
+    difference: (arr1: any[], arr2: any[]) => arr1.filter((item: any) => !arr2.includes(item)),
+    intersection: (arr1: any[], arr2: any[]) => arr1.filter((item: any) => arr2.includes(item))
+};
+
+export function parseNumber(num: number, toFixed: number = 1) {
+    let m = Math.abs(num);
+    let txt = '';
+    if (m < 1000) txt =`${m.toFixed(toFixed)}`;
+    else if(m < 1000000) txt = `${Math.floor(m / 1000).toFixed(toFixed)}k`;
+    else txt = `${Math.floor(m / 1000000).toFixed(toFixed)}M`;
+    return txt;
 }

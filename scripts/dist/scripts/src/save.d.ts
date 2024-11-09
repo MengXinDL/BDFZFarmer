@@ -3,6 +3,7 @@ export interface SavedFieldsData {
     x: number;
     y: number;
     crop: Crops;
+    level: number;
     output: number;
     unlocked: boolean;
     moisture: number;
