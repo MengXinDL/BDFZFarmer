@@ -10,7 +10,7 @@ import {
     data, calcMoisture,
     base64, unbase64
 } from "./sharedData";
-import { Crops } from "./crops";
+import { Crops, getCropsOutput, CropConfigs } from "./crops";
 
 
 
@@ -20,6 +20,8 @@ import { Crops } from "./crops";
 
 
 addEventListener('load', () => {
+    // db.save.deleteData('save').catch(console.error);
+
     const s = document.getElementById('save');
     const l = document.getElementById('load');
     const a = document.createElement('a');
@@ -93,8 +95,13 @@ export interface SavedFieldsData {
     x: number,
     y: number,
     crop: Crops,
+    output: number,
     unlocked: boolean,
     moisture: number
+}
+export enum SeedMode {
+    储存,
+    售卖
 }
 
 const VERSION = version;
@@ -106,12 +113,14 @@ export const save: {
     seed: number,
     version: string,
     enableCrops: Crops[],
+    seeds: {type: Crops, count: number, mode: SeedMode}[]
 } = {
     fields: {},
     money: 0,
     seed: Math.floor(Math.random() * 1000000000),
     version: VERSION,
-    enableCrops: [Crops.None, Crops.Cockscomb]
+    enableCrops: [Crops.None, Crops.Cockscomb],
+    seeds: [{type: Crops.None, count: Infinity, mode: SeedMode.储存}, {type: Crops.Cockscomb, count: 1, mode: SeedMode.售卖}]
 }
 
 export function initSaveData(saveData: object) {
@@ -135,26 +144,6 @@ export function initSaveData(saveData: object) {
             }
             d[key] = v;
         }
-        for (let f in d[key]) {
-            if (!("moisture" in d[key][f]) || (d[key][f].moisture === undefined)) d[key][f].moisture = calcMoisture(d[key][f].x, d[key][f].y);
-            if (!("unlocked" in d[key][f]) || (d[key][f].unlocked === undefined)) d[key][f].unlocked = true;
-            if (!("crop" in d[key][f]) || (d[key][f].crop === undefined)) d[key][f].crop = Crops.None;
-            if (d[key][f].unlocked) {
-                for (const a of data.around) {
-                    let x = a[0] + d[key][f].x;
-                    let y = a[1] + d[key][f].y;
-                    if (!d[key][`${x},${y}`]) {
-                        d[key][`${x},${y}`] = {
-                            x, y,
-                            crop: Crops.None,
-                            unlocked: false,
-                            moisture: calcMoisture(x, y)
-                        }
-                    }
-                }
-            }
-        }
-
     }
 
     function v1_0_() {
@@ -178,10 +167,36 @@ export function initSaveData(saveData: object) {
             value[k].moisture = calcMoisture(value[k].x, value[k].y);
         })
     }
+    
+    function correctField() {
+        let key = 'fields';
+        for (let f in d[key]) {
+            let field = d[key][f];
+            if (!("moisture" in field) || (field.moisture === undefined)) field.moisture = calcMoisture(field.x, field.y);
+            if (!("unlocked" in field) || (field.unlocked === undefined)) field.unlocked = true;
+            if (!("crop" in field) || (field.crop === undefined)) field.crop = Crops.None;
+            if (!("output" in field) || (field.output === undefined)) field.output = getCropsOutput(field.crop, field.moisture) * CropConfigs[field.crop as Crops].basicOutput;
+            if (field.unlocked) {
+                for (const a of data.around) {
+                    let x = a[0] + field.x;
+                    let y = a[1] + field.y;
+                    if (!d[key][`${x},${y}`]) {
+                        d[key][`${x},${y}`] = {
+                            x, y,
+                            crop: Crops.None,
+                            unlocked: false,
+                            moisture: calcMoisture(x, y)
+                        }
+                    }
+                }
+            }
+        }
+    }
 
     v0_(); // to support version 0.*.* Array like data
     v1_0_(); // to clear Crockscombs from version 1.0.* 
-    v1_1_0();
+    v1_1_0(); // to fix moisture
+    correctField(); // to initialize uninitialized fields config
 
     console.log('parsed data done\nbefore:');
     console.log(saveData);
@@ -189,5 +204,8 @@ export function initSaveData(saveData: object) {
     console.log(d);
 
     Object.assign(save, d);
+    save.seeds.forEach((s) => {
+        if(s.count === null) s.count = Infinity;
+    })
     return s;
 }

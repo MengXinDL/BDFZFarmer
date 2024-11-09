@@ -81,6 +81,7 @@ async function init(): Promise<void> {
             x: 0,
             y: 0,
             crop: Crops.None,
+            output: 0,
             unlocked: true,
             moisture: calcMoisture(0, 0)
         }
@@ -89,11 +90,13 @@ async function init(): Promise<void> {
                 x: a[0],
                 y: a[1],
                 crop: Crops.None,
+                output: 0,
                 unlocked: false,
                 moisture: calcMoisture(a[0], a[1])
             }
         }
         db.save.addData('save', save);
+        
     }
     
     updateAtlas();

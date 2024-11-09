@@ -6,6 +6,7 @@ class eventDetector {
     pressed = false;
     pressedElement: HTMLElement | null = null;
     curentElement: HTMLElement | null = null;
+    pressTime = 0;
 
     private lastX = 0;
     private lastY = 0;
@@ -36,6 +37,7 @@ class eventDetector {
             this.startY = e.offsetY;
             this.pressedElement = e.target as HTMLElement;
             this.pressed = true;
+            this.pressTime = Date.now();
         });
         document.addEventListener('mouseup', (e: MouseEvent) => {
             let x = e.offsetX - this.startX;

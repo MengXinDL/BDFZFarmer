@@ -166,7 +166,7 @@ export class Field {
         }
         return Math.floor((x * x + y * y) ** 1.4);
     }
-    static getFieldInformation(f: Field | SavedFieldsData): string[] {
+    static getFieldInformation(f: SavedFieldsData): string[] {
         let crop = Crops.None;
         if (!(f instanceof Field)) {
             crop = f.crop;
@@ -175,7 +175,7 @@ export class Field {
             `含水量：${f.moisture.toFixed(2).slice(2)}`,
             `土地类型：${getFieldConfig(f.moisture).innerText}`,
             `作物：${CropConfigs[crop].name}`,
-            `每秒收入：${getCropsOutput(crop, f.moisture).toFixed(2)}`
+            `每秒收入：${f.output.toFixed(2)}`
         ]
     }
 }

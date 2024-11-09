@@ -5,6 +5,7 @@ declare class eventDetector {
     pressed: boolean;
     pressedElement: HTMLElement | null;
     curentElement: HTMLElement | null;
+    pressTime: number;
     private lastX;
     private lastY;
     private startX;

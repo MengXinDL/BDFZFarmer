@@ -27,7 +27,7 @@ export declare class Field {
     render(): void;
     color(): string;
     static calcMoney(f: number | Field, x?: number, y?: number): number;
-    static getFieldInformation(f: Field | SavedFieldsData): string[];
+    static getFieldInformation(f: SavedFieldsData): string[];
 }
 export declare const data: {
     gamecvs: HTMLCanvasElement;

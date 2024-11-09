@@ -13,7 +13,9 @@ interface CropConfig {
         hi: number;
     };
     basicOutput: number;
+    rarity: CropRarity;
     foreground: Crops[];
+    knowledge: number;
     introduction: string;
     node: TreeNode;
 }
@@ -25,15 +27,30 @@ declare class Crop implements CropConfig {
         hi: number;
     };
     basicOutput: number;
+    rarity: CropRarity;
     foreground: Crops[];
+    knowledge: number;
     introduction: string;
     node: TreeNode;
     constructor(name: string, moisture: {
         lo: number;
         mid: number;
         hi: number;
-    }, basicOutput: number, foreground: Crops[], introduction: string);
+    }, basicOutput: number, rarity: CropRarity, foreground: Crops[], knowledge: number, introduction: string);
 }
+export declare enum CropRarity {
+    Common = 0,
+    Uncommon = 1,
+    Rare = 2,
+    Epic = 3,
+    Legendary = 4
+}
+export declare const CropRarityConfigs: {
+    [key in CropRarity]: {
+        color: string;
+        name: string;
+    };
+};
 export declare const CropConfigs: {
     [key in Crops]: Crop;
 };
