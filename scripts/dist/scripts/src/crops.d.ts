@@ -1,11 +1,12 @@
-import { TreeNode } from './tree';
+import { FieldTypes } from "./packs";
 export declare enum Crops {
     None = 0,
     Cockscomb = 1,
     BigCockscomb = 2,
     GoldenCockscomb = 3
 }
-interface CropConfig {
+declare class Crop {
+    id: Crops;
     name: string;
     moisture: {
         lo: number;
@@ -16,29 +17,19 @@ interface CropConfig {
     seedOutput: number;
     rarity: CropRarity;
     foreground: Crops[];
-    knowledge: number;
-    introduction: string;
-    node: TreeNode;
-}
-declare class Crop implements CropConfig {
-    name: string;
-    moisture: {
-        lo: number;
-        mid: number;
-        hi: number;
+    nextCrop: Crops[];
+    cost: {
+        seed: number[];
+        knoledge: {
+            [key in FieldTypes]: number;
+        };
     };
-    basicOutput: number;
-    seedOutput: number;
-    rarity: CropRarity;
-    foreground: Crops[];
-    knowledge: number;
     introduction: string;
-    node: TreeNode;
-    constructor(name: string, moisture: {
+    constructor(id: Crops, name: string, moisture: {
         lo: number;
         mid: number;
         hi: number;
-    }, basicOutput: number, seedOutput: number, rarity: CropRarity, foreground: Crops[], knowledge: number, introduction: string);
+    }, basicOutput: number, seedOutput: number, rarity: CropRarity, foreground: Crops[], cost: [number[], [number, number, number, number, number, number]] | null, introduction: string);
 }
 export declare enum CropRarity {
     Common = 0,

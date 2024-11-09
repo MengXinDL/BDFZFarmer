@@ -1,11 +1,15 @@
 import Noise from 'noisejs';
 import { SavedFieldsData } from "./save";
+import { FieldTypes } from "./packs";
 interface FieldConfig {
     color: string;
     innerText: string;
     range: [number, number];
 }
-export declare function getFieldConfig(moisture: number): FieldConfig;
+export declare const FieldConfigs: {
+    [key in FieldTypes]: FieldConfig;
+};
+export declare function getFieldConfig(moisture: number): [FieldConfig, FieldTypes];
 export declare class box {
     x: number;
     y: number;

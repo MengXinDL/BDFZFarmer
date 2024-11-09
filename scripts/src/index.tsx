@@ -1,10 +1,11 @@
 import {
     translation,
     data,
-    Field,
+    Field, FieldConfigs,
     calcMoisture,
     pixToBox,
-    parseNumber
+    parseNumber,
+    getFieldConfig,
 } from "./sharedData";
 import { interact } from "./interact";
 import {
@@ -18,29 +19,43 @@ import {
 import { save, SeedMode } from "./save";
 import { createRoot } from "react-dom/client";
 import { useState } from "react";
+import { FieldTypes } from "./packs";
 
 let currentCrop = Crops.None;
 addEventListener('load', () => {
     let mp = document.getElementById('money');
+    let knp = document.getElementById('knowledge');
     let sd = createRoot(document.getElementById('seeds') as HTMLElement);
     setInterval(() => {
-        let d = 0;
+        let d = 0; // 单位时间总收入
         let mf = save.seeds.filter(s => s.mode === SeedMode.售卖).map(s => s.type); // 售卖模式的种子
         let upd: { [key: number]: number } = {}; // 更新数量的种子
+        let k: { [key in FieldTypes]: number } = {
+            [FieldTypes.Unknown]: 0,
+            [FieldTypes.Desert]: 0,
+            [FieldTypes.Saline]: 0,
+            [FieldTypes.Barren]: 0,
+            [FieldTypes.Regular]: 0,
+            [FieldTypes.Nunja]: 0,
+            [FieldTypes.Lake]: 0
+        }
         for (const f in save.fields) {
             let f1 = save.fields[f];
             if (!f1.unlocked) continue;
             if (mf.includes(f1.crop)) d += f1.output * CropConfigs[f1.crop].basicOutput;
             else upd[f1.crop] = (upd[f1.crop] || 0) + getCropsOutput(f1.crop, f1.moisture) * CropConfigs[f1.crop].seedOutput;
+            if(f1.level > 0) k[getFieldConfig(f1.moisture)[1]] += f1.level;
         }
         for (let i in save.seeds) {
             if (save.seeds[i].type in upd) save.seeds[i].count += upd[save.seeds[i].type] / 4;
         }
         save.money += d / 4;
-        if (mp) mp.innerText =
-            `货币: ${parseNumber(save.money, 2)}
-${parseNumber(d, 2)}/s`;
-
+        if (mp) mp.innerText = `货币: ${parseNumber(save.money)}\n${parseNumber(d)}/s`;
+        if (knp) knp.innerText = Object.keys(k).map(key => {
+            let i = Number(key) as FieldTypes;
+            if (i === FieldTypes.Unknown || k[i] === 0) return '';
+            return `${FieldConfigs[i].innerText}知识: ${parseNumber(save.knoledge[i] += k[i])}`
+        }).filter(s => s !== '').join('\n');
         sd.render(<Seeds />)
     }, 250)
 })
@@ -63,8 +78,7 @@ interact.click = (x: number, y: number) => {
     function buyField() {
         let m = Field.calcMoney(f.moisture, f.x, f.y);
         if (m > save.money) {
-            showTip(`需要${m.toFixed(2)}，但你只有${save.money.toFixed(2)}`)
-            console.log(`需要${m.toFixed(2)}，但你只有${save.money.toFixed(2)}`);
+            showTip(`需要${parseNumber(m)}，但你只有${parseNumber(save.money)}`);
             return;
         }
         save.money -= m;
@@ -92,12 +106,33 @@ interact.click = (x: number, y: number) => {
             text: Field.getFieldInformation(f),
         }, false)
     } else if (currentMode === Mode.种植) {
+        if (f.crop !== Crops.None) {
+            showTip('该区域已有作物');
+            return;
+        }
+        if (f.level > 0) {
+            showTip('该区域已有研究所');
+            return;
+        }
         let s = save.seeds.find(s => s.type === currentCrop);
         if (s === undefined) return;
         if (s.count < 1) return;
         s.count -= 1;
         f.crop = currentCrop;
         f.output = getCropsOutput(f.crop, f.moisture);
+        render();
+    } else if (currentMode === Mode.建造) {
+        if(f.crop !== Crops.None) {
+            showTip('该区域已有作物，不能建造研究所');
+            return;
+        }
+        let m = 100 * Math.exp(f.level);
+        if (save.money < m) {
+            showTip(`你的货币不足，需要${parseNumber(m)}但你只有${parseNumber(save.money)}`);
+            return;
+        }
+        save.money -= m;
+        f.level += 1;
         render();
     }
 }
@@ -177,3 +212,5 @@ function Seeds() {
     })
     return <>{box}</>
 }
+
+

@@ -1,61 +1,62 @@
 import Noise from 'noisejs';
-import { Crops, CropConfigs, getCropsOutput } from "./crops";
+import { Crops, CropConfigs} from "./crops";
 import { save, SavedFieldsData } from "./save";
+import { FieldTypes } from "./packs";
 
 interface FieldConfig {
     color: string;
     innerText: string;
     range: [number, number];
 }
-const FieldConfigs: {
-    [key: string]: FieldConfig;
+export const FieldConfigs: {
+    [key in FieldTypes]: FieldConfig;
 } = {
-    Unknown: {
+    [FieldTypes.Unknown]: {
         color: "#000000",
         innerText: "未知",
         range: [NaN, NaN]
     },
-    Desert: {
+    [FieldTypes.Desert]: {
         color: "#ffd68f",
         innerText: "沙漠",
         range: [0, 0.1]
     },
-    Saline: {
+    [FieldTypes.Saline]: {
         color: "#ffffff",
         innerText: "盐碱地",
         range: [0.1, 0.3]
     },
-    Barren: {
+    [FieldTypes.Barren]: {
         color: "#c29c0d",
         innerText: "贫瘠地",
         range: [0.3, 0.5]
     },
-    Regular: {
+    [FieldTypes.Regular]: {
         color: "#b56605",
         innerText: "普通土地",
         range: [0.5, 0.7]
     },
-    Nunja: {
+    [FieldTypes.Nunja]: {
         color: "#7d710a",
         innerText: "沼泽地",
         range: [0.7, 0.9]
     },
-    Lake: {
+    [FieldTypes.Lake]: {
         color: "#0085e3",
         innerText: "湖泊",
         range: [0.9, 1]
     }
 }
 
-export function getFieldConfig(moisture: number): FieldConfig {
+export function getFieldConfig(moisture: number): [FieldConfig, FieldTypes] {
     for (let f in FieldConfigs) {
-        let fc = FieldConfigs[f];
+        let fc = FieldConfigs[Number(f) as FieldTypes];
         if (
             fc.range[0] <= moisture &&
             fc.range[1] > moisture
-        ) return fc;
+        ) return [fc, Number(f) as FieldTypes];
     }
-    return FieldConfigs.Unknown;
+    return [FieldConfigs[0], FieldTypes.Unknown];
 }
 
 export class box {
@@ -131,11 +132,12 @@ export class Field {
         let txt = "";
         if (translation.scale > 25) {
             if (this.unlocked) {
-                txt = getFieldConfig(this.moisture).innerText;
+                txt = getFieldConfig(this.moisture)[0].innerText;
                 if (f.crop !== Crops.None) txt += `\n${CropConfigs[f.crop].name}`
+                if (f.level !== 0) txt += `\n${f.level}级研究所`
             } else {
                 let m = Field.calcMoney(this);
-                txt = `花费${parseNumber(m)}`;
+                txt = `花费${parseNumber(m, 0)}`;
             }
         }
         let p = boxToPix(this.x, this.y);
@@ -152,7 +154,7 @@ export class Field {
     }
     color() {
         return this.unlocked ?
-            getFieldConfig(this.moisture).color
+            getFieldConfig(this.moisture)[0].color
             : "#ffffff7f";
     }
     static calcMoney(f: number | Field, x?: number, y?: number): number {
@@ -171,9 +173,10 @@ export class Field {
         }
         return [`坐标：${f.x},${f.y}`,
             `含水量：${f.moisture.toFixed(2).slice(2)}`,
-            `土地类型：${getFieldConfig(f.moisture).innerText}`,
+            `土地类型：${getFieldConfig(f.moisture)[0].innerText}`,
             `作物：${CropConfigs[crop].name}`,
-            `每秒收入：${(f.output * CropConfigs[crop].basicOutput).toFixed(2)}`
+            `每秒收入：${(f.output * CropConfigs[crop].basicOutput).toFixed(2)}`,
+            `研究所：${f.level === 0 ? '无' : f.level + '级'}`,
         ]
     }
 }
@@ -304,11 +307,11 @@ export const collectionCalc = {
     intersection: (arr1: any[], arr2: any[]) => arr1.filter((item: any) => arr2.includes(item))
 };
 
-export function parseNumber(num: number, toFixed: number = 1) {
+export function parseNumber(num: number, toFixed: number = 2) {
     let m = Math.abs(num);
     let txt = '';
     if (m < 1000) txt =`${m.toFixed(toFixed)}`;
-    else if(m < 1000000) txt = `${Math.floor(m / 1000).toFixed(toFixed)}k`;
-    else txt = `${Math.floor(m / 1000000).toFixed(toFixed)}M`;
+    else if(m < 1000000) txt = `${(m / 1000).toFixed(toFixed)}k`;
+    else txt = `${(m / 1000000).toFixed(toFixed)}M`;
     return txt;
 }

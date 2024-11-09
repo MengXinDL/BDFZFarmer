@@ -1,4 +1,5 @@
 import { Crops } from "./crops";
+import { FieldTypes } from "./packs";
 export interface SavedFieldsData {
     x: number;
     y: number;
@@ -25,5 +26,8 @@ export declare const save: {
         count: number;
         mode: SeedMode;
     }[];
+    knoledge: {
+        [key in FieldTypes]: number;
+    };
 };
 export declare function initSaveData(saveData: object): boolean;

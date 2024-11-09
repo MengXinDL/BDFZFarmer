@@ -127,7 +127,7 @@ export function updateAtlas() {
         let f = save.fields[i];
         let x = f.x - e.minX;
         let y = f.y - e.minY;
-        if(f.unlocked) c.fillStyle = getFieldConfig(f.moisture).color;
+        if(f.unlocked) c.fillStyle = getFieldConfig(f.moisture)[0].color;
         else c.fillStyle = '#ffffff7f';
         c.fillRect(x, y, 1, 1);
     }

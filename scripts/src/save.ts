@@ -11,7 +11,7 @@ import {
     base64, unbase64
 } from "./sharedData";
 import { Crops, getCropsOutput, CropConfigs } from "./crops";
-
+import { FieldTypes } from "./packs";
 
 
 
@@ -114,14 +114,24 @@ export const save: {
     seed: number,
     version: string,
     enableCrops: Crops[],
-    seeds: {type: Crops, count: number, mode: SeedMode}[]
+    seeds: {type: Crops, count: number, mode: SeedMode}[],
+    knoledge: {[key in FieldTypes]: number}
 } = {
     fields: {},
     money: 0,
     seed: Math.floor(Math.random() * 1000000000),
     version: VERSION,
     enableCrops: [Crops.None, Crops.Cockscomb],
-    seeds: [{type: Crops.None, count: Infinity, mode: SeedMode.储存}, {type: Crops.Cockscomb, count: 1, mode: SeedMode.售卖}]
+    seeds: [{type: Crops.None, count: Infinity, mode: SeedMode.储存}, {type: Crops.Cockscomb, count: 1, mode: SeedMode.售卖}],
+    knoledge: {
+        [FieldTypes.Unknown]: 0,
+        [FieldTypes.Desert]: 0,
+        [FieldTypes.Barren]: 0,
+        [FieldTypes.Saline]: 0,
+        [FieldTypes.Regular]: 0,
+        [FieldTypes.Nunja]: 0,
+        [FieldTypes.Lake]: 0
+    }
 }
 
 export function initSaveData(saveData: object) {
@@ -200,11 +210,25 @@ export function initSaveData(saveData: object) {
         if (!("seeds" in saveData)) d[key] = [{type: Crops.None, count: Infinity, mode: SeedMode.储存}, {type: Crops.Cockscomb, count: 1, mode: SeedMode.售卖}];
     }
 
+    function correctKnoledge() {
+        let key = 'knoledge';
+        if (!("knoledge" in saveData)) d[key] = {
+            [FieldTypes.Unknown]: 0,
+            [FieldTypes.Desert]: 0,
+            [FieldTypes.Barren]: 0,
+            [FieldTypes.Saline]: 0,
+            [FieldTypes.Regular]: 0,
+            [FieldTypes.Nunja]: 0,
+            [FieldTypes.Lake]: 0
+        };
+    }
+
     v0_(); // to support version 0.*.* Array like data
     v1_0_(); // to clear Crockscombs from version 1.0.* 
     v1_1_0(); // to fix moisture
     correctField(); // to initialize uninitialized fields config
     correctSeeds(); // to initialize uninitialized seeds
+    correctKnoledge(); // to initialize uninitialized knoledge
 
     console.log('parsed data done\nbefore:');
     console.log(saveData);
