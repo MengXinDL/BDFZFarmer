@@ -208,6 +208,7 @@ export function initSaveData(saveData: object) {
     function correctSeeds() {
         let key = 'seeds';
         if (!("seeds" in saveData)) d[key] = [{type: Crops.None, count: Infinity, mode: SeedMode.储存}, {type: Crops.Cockscomb, count: 1, mode: SeedMode.售卖}];
+        if (!("enableCrops" in saveData)) d.enableCrops = [Crops.None, Crops.Cockscomb];
     }
 
     function correctKnoledge() {

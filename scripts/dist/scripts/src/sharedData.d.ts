@@ -79,5 +79,5 @@ export declare const collectionCalc: {
     difference: (arr1: any[], arr2: any[]) => any[];
     intersection: (arr1: any[], arr2: any[]) => any[];
 };
-export declare function parseNumber(num: number, toFixed?: number): string;
+export declare function parseNumber(num: number, toFixed?: number, fixed?: boolean): string;
 export {};

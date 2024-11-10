@@ -38,6 +38,9 @@ body {
     z-index: 1;
     background-color: rgba(0, 0, 0, 0.7);
     justify-content: flex-start;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(0, 0, 0, 0.5) rgba(0, 0, 0, 0.3);
 }
 
 .box-container {
@@ -93,6 +96,10 @@ body {
     padding: 5px;
     margin: 3px;
     transform: translate(-50%, 0);
+    z-index: 999;
+    display: flex;
+    flex-direction: row;
+    white-space: nowrap;
 }
 .tip-container {
     position: absolute;
@@ -100,4 +107,15 @@ body {
     left: 50vw;
     display: flex;
     flex-direction: column;
+}
+
+.newseed {
+    border-radius: 10px;
+    height: 40px;
+    width: calc(100% - 25px);
+    padding: 5px;
+    margin: 3px;
+    border: 5px solid;
+    text-align: center;
+    font-size: x-large;
 }

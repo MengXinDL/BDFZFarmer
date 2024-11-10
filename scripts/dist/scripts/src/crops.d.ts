@@ -3,7 +3,13 @@ export declare enum Crops {
     None = 0,
     Cockscomb = 1,
     BigCockscomb = 2,
-    GoldenCockscomb = 3
+    GoldenCockscomb = 3,
+    WildSingleWheat = 4,
+    SingleWheat = 5,
+    WildDoubleWheat = 6,
+    Aegilops = 7,
+    DoubleWheat = 8,
+    Wheat = 9
 }
 declare class Crop {
     id: Crops;

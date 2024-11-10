@@ -1,5 +1,5 @@
 import Noise from 'noisejs';
-import { Crops, CropConfigs} from "./crops";
+import { Crops, CropConfigs } from "./crops";
 import { save, SavedFieldsData } from "./save";
 import { FieldTypes } from "./packs";
 
@@ -172,11 +172,11 @@ export class Field {
             crop = f.crop;
         }
         return [`坐标：${f.x},${f.y}`,
-            `含水量：${f.moisture.toFixed(2).slice(2)}`,
-            `土地类型：${getFieldConfig(f.moisture)[0].innerText}`,
-            `作物：${CropConfigs[crop].name}`,
-            `每秒收入：${(f.output * CropConfigs[crop].basicOutput).toFixed(2)}`,
-            `研究所：${f.level === 0 ? '无' : f.level + '级'}`,
+        `含水量：${f.moisture.toFixed(2).slice(2)}`,
+        `土地类型：${getFieldConfig(f.moisture)[0].innerText}`,
+        `作物：${CropConfigs[crop].name}`,
+        `每秒收入：${(f.output * CropConfigs[crop].basicOutput).toFixed(2)}`,
+        `研究所：${f.level === 0 ? '无' : f.level + '级'}`,
         ]
     }
 }
@@ -307,11 +307,12 @@ export const collectionCalc = {
     intersection: (arr1: any[], arr2: any[]) => arr1.filter((item: any) => arr2.includes(item))
 };
 
-export function parseNumber(num: number, toFixed: number = 2) {
+export function parseNumber(num: number, toFixed: number = 2, fixed: boolean = true) {
     let m = Math.abs(num);
     let txt = '';
-    if (m < 1000) txt =`${m.toFixed(toFixed)}`;
-    else if(m < 1000000) txt = `${(m / 1000).toFixed(toFixed)}k`;
-    else txt = `${(m / 1000000).toFixed(toFixed)}M`;
+    if (m < 1000) txt = `${m.toFixed(fixed ? toFixed : 0)}`;
+    else if (m < 1000000) txt = `${(m / 1000).toFixed(toFixed)}k`;
+    else if (m < 1e9) txt = `${(m / 1000000).toFixed(toFixed)}M`;
+    else if (m < 1e12) txt = `${(m / 10e9).toFixed(toFixed)}B`;
     return txt;
 }

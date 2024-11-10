@@ -18,8 +18,9 @@ import {
 } from "./crops";
 import { save, SeedMode } from "./save";
 import { createRoot } from "react-dom/client";
-import { useState } from "react";
+import React, { useState } from "react";
 import { FieldTypes } from "./packs";
+import event from "./event";
 
 let currentCrop = Crops.None;
 addEventListener('load', () => {
@@ -44,7 +45,7 @@ addEventListener('load', () => {
             if (!f1.unlocked) continue;
             if (mf.includes(f1.crop)) d += f1.output * CropConfigs[f1.crop].basicOutput;
             else upd[f1.crop] = (upd[f1.crop] || 0) + getCropsOutput(f1.crop, f1.moisture) * CropConfigs[f1.crop].seedOutput;
-            if(f1.level > 0) k[getFieldConfig(f1.moisture)[1]] += f1.level;
+            if (f1.level > 0) k[getFieldConfig(f1.moisture)[1]] += 2.8 ** f1.level / 2;
         }
         for (let i in save.seeds) {
             if (save.seeds[i].type in upd) save.seeds[i].count += upd[save.seeds[i].type] / 4;
@@ -56,6 +57,8 @@ addEventListener('load', () => {
             if (i === FieldTypes.Unknown || k[i] === 0) return '';
             return `${FieldConfigs[i].innerText}知识: ${parseNumber(save.knoledge[i] += k[i])}`
         }).filter(s => s !== '').join('\n');
+
+        updateSeeds();
         sd.render(<Seeds />)
     }, 250)
 })
@@ -91,6 +94,7 @@ interact.click = (x: number, y: number) => {
                 y: y2,
                 crop: Crops.None,
                 output: 0,
+                level: 0,
                 moisture: calcMoisture(x2, y2),
                 unlocked: false
             }
@@ -106,7 +110,7 @@ interact.click = (x: number, y: number) => {
             text: Field.getFieldInformation(f),
         }, false)
     } else if (currentMode === Mode.种植) {
-        if (f.crop !== Crops.None) {
+        if (f.crop !== Crops.None && currentCrop !== Crops.None) {
             showTip('该区域已有作物');
             return;
         }
@@ -122,7 +126,7 @@ interact.click = (x: number, y: number) => {
         f.output = getCropsOutput(f.crop, f.moisture);
         render();
     } else if (currentMode === Mode.建造) {
-        if(f.crop !== Crops.None) {
+        if (f.crop !== Crops.None) {
             showTip('该区域已有作物，不能建造研究所');
             return;
         }
@@ -182,10 +186,10 @@ addEventListener('load', () => {
 function Seeds() {
     let box: JSX.Element[] = [];
     save.seeds.forEach((s, i) => {
-        let cnt = s.count;
         box.push(
             <span style={{ color: CropRarityConfigs[CropConfigs[s.type].rarity].color, margin: '5px' }} key={i}>
-                {CropConfigs[s.type].name}: {s.count === Infinity ? '无限' : `${s.count.toFixed(0)}`}
+                {CropConfigs[s.type].name}: {s.count === Infinity ? '无限' : `${parseNumber(s.count, 2, false)}`}
+                <br />
                 <button onClick={() => {
                     let cc = CropConfigs[s.type];
                     let rc = CropRarityConfigs[cc.rarity];
@@ -198,8 +202,7 @@ function Seeds() {
                             `介绍：${cc.introduction}`,
                         ]
                     }, false)
-                }}>查看详情</button>
-                <br />
+                }}>详情</button>
                 <button onClick={() => { s.mode = 1 - s.mode }}>{SeedMode[s.mode] + '模式'}</button>
                 <button
                     onClick={() => {
@@ -213,4 +216,114 @@ function Seeds() {
     return <>{box}</>
 }
 
+let seeds: ReturnType<typeof createRoot> | null = null;
+const nextSeeds: {
+    crop: Crops;
+    unlockedForeground: Crops[];
+    unfullKnowledge: FieldTypes[];
+}[] = [];
+function updateSeeds() {
+    const n: { [key in 0 | 1 | 2]: React.JSX.Element[] } = {
+        0: [],
+        1: [],
+        2: []
+    };
+    save.seeds.forEach(sd => {
+        CropConfigs[sd.type].nextCrop.forEach(s => {
+            if (nextSeeds.find(ns => ns.crop === s) === undefined && !save.enableCrops.includes(s)) {
+                nextSeeds.push({
+                    crop: s,
+                    unlockedForeground: CropConfigs[s].foreground,
+                    unfullKnowledge: [0, 1, 2, 3, 4, 5, 6]
+                })
+            }
+        })
+    })
+    nextSeeds.forEach((s, i) => {
+        s.unlockedForeground = s.unlockedForeground.filter(c => !save.enableCrops.includes(c))
+        s.unfullKnowledge = s.unfullKnowledge.filter(k => save.knoledge[k] < CropConfigs[s.crop].cost.knoledge[k]);
+        if (s.unlockedForeground.length > 0) {
+            n[0].push(<NewSeed croptype={s.crop} type={0} key={i} />);
+        } else if (s.unfullKnowledge.length > 0) {
+            n[1].push(<NewSeed croptype={s.crop} type={1} key={i} />);
+        } else {
+            n[2].push(<NewSeed croptype={s.crop} type={2} key={i} />);
+        }
+    })  
+    seeds?.render(<>{n[2]}{n[1]}{n[0]}</>);
+}
 
+addEventListener('load', () => {
+    seeds = createRoot(document.getElementById('new') as HTMLElement)
+    event.on('buySeed', (id: Crops) => {
+        if (save.enableCrops.includes(id)) return showTip('已种植');
+        let enable = true;
+        let cc = CropConfigs[id];
+
+        Object.entries(cc.cost.knoledge).forEach(([k, v]) => {
+            enable = enable && save.knoledge[Number(k) as FieldTypes] >= v;
+        })
+        cc.foreground.forEach((f, i) => {
+            enable = enable && save.enableCrops.includes(f) && (save.seeds.find(s => s.type === f)?.count || 0) >= cc.cost.seed[i];
+        })
+        if (!enable) return showTip('种子或知识不足');
+        Object.entries(cc.cost.knoledge).forEach(([k, v]) => {
+            save.knoledge[Number(k) as FieldTypes] -= v;
+        })
+        cc.foreground.forEach((f, i) => {
+            let k = save.seeds.find($ => $.type === f);
+            if (k !== undefined) {
+                k.count -= cc.cost.seed[i];
+            }
+        })
+        save.enableCrops.push(id);
+        save.seeds.push({ type: id, count: 1, mode: SeedMode.储存 });
+        nextSeeds.splice(nextSeeds.findIndex(ns => ns.crop === id), 1);
+        console.log(nextSeeds);
+        updateSeeds();
+
+    })
+})
+function NewSeed({ type, croptype }: { type: 0 | 1 | 2, croptype: Crops }) { // 0: 前置植物未全部完成 1: 前置植物全部完成，但没有足够种子或知识 2: 可以解锁
+    let cc = CropConfigs[croptype];
+    let rc = CropRarityConfigs[cc.rarity];
+    let time = React.useRef(0);
+    let callback = React.useCallback(() => {
+        if (Date.now() - time.current < 500) {
+            switch (type) {
+                case 0:
+                    showTip('前置植物未全部完成');
+                    break;
+                case 1:
+                    showTip('知识不足');
+                    break;
+                case 2:
+                    event.emit('buySeed', cc.id);
+            }
+        } else {
+            showNotice(<><span style={{ color: rc.color }}>{cc.name}</span>种子信息</>, {
+                text: [
+                    `名称：${cc.name}`,
+                    `需要种子：${cc.foreground.length === 0 ? '无' : cc.foreground.map((f, i) => `${CropConfigs[f].name}×${cc.cost.seed[i]}`).join('\n')}`,
+                    `需要知识：${cc.foreground.length === 0 ? '无' :
+                        Object.entries(cc.cost.knoledge).map(([k, v]) =>
+                            k === '0' || v === 0 ? '' :
+                            `${FieldConfigs[Number(k) as FieldTypes].innerText}×${v}`
+                        ).filter(s => s !== '').join('\n')}`,
+                ]
+            }, false)
+        }
+    }, [type, croptype])
+    return (
+        <span className="newseed" style={{
+            color: rc.color,
+            backgroundColor: ['#f007', '#ff07', '#fff7'][type],
+            borderColor: rc.color,
+        }}
+            onMouseDown={() => {
+                time.current = Date.now();
+            }}
+            onMouseUp={callback}
+        >{cc.name}</span>
+    )
+}
