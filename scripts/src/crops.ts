@@ -86,10 +86,10 @@ export enum CropRarity {
 }
 export const CropRarityConfigs: { [key in CropRarity]: { color: string, name: string } } = {
     [CropRarity.Common]: { color: '#FFFFFF', name: '普通' },
-    [CropRarity.Uncommon]: { color: '#0000FF', name: '罕见' },
-    [CropRarity.Rare]: { color: '#00FF00', name: '稀有' },
-    [CropRarity.Epic]: { color: '#FF0000', name: '史诗' },
-    [CropRarity.Legendary]: { color: '#FF00FF', name: '传奇' },
+    [CropRarity.Uncommon]: { color: '#00FF00', name: '罕见' },
+    [CropRarity.Rare]: { color: '#87CEEB', name: '稀有' },
+    [CropRarity.Epic]: { color: '#FF7F64', name: '史诗' },
+    [CropRarity.Legendary]: { color: '#DC64FF', name: '传奇' },
 }
 export const CropConfigs : { [key in Crops]: Crop } = {
     //[Crops.]: new Crop(Crops., '', '', { lo: , mid: , hi: }, , , CropRarity., [], [[], [, , , , , ]], ''),

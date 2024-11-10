@@ -105,9 +105,13 @@ interact.click = (x: number, y: number) => {
         updateAtlas();
         render();
     }
+    let now = Date.now();
     if (!f.unlocked) {
         buyField();
-    } else if (Date.now() - interact.pressTime > 500) {
+    } else if (
+        now - interact.pressTime > 500 ||
+        (now - interact.touchTime > 500 && now - interact.pressTime < 5)
+    ) {
         showNotice('区块信息', {
             text: Field.getFieldInformation(f),
         }, false)
