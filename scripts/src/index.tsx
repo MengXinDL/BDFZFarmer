@@ -21,6 +21,8 @@ import { createRoot } from "react-dom/client";
 import React, { useState } from "react";
 import { FieldTypes } from "./packs";
 import event from "./event";
+import db from "./database";
+import { version } from "../../statics/version.json";
 
 let currentCrop = Crops.None;
 addEventListener('load', () => {
@@ -327,3 +329,14 @@ function NewSeed({ type, croptype }: { type: 0 | 1 | 2, croptype: Crops }) { // 
         >{cc.name}</span>
     )
 }
+
+addEventListener('load', () => {
+    let reset = document.getElementById('reset') as HTMLButtonElement;
+    reset.onclick = async() => {
+        let c = confirm('确定要重置吗?');
+        if (c) {
+            await db.save.deleteData('save');
+            location.reload();
+        }
+    }
+})
