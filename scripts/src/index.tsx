@@ -306,11 +306,11 @@ function NewSeed({ type, croptype }: { type: 0 | 1 | 2, croptype: Crops }) { // 
             showNotice(<><span style={{ color: rc.color }}>{cc.name}</span>种子信息</>, {
                 text: [
                     `名称：${cc.name}`,
-                    `需要种子：${cc.foreground.length === 0 ? '无' : cc.foreground.map((f, i) => `${CropConfigs[f].name}×${cc.cost.seed[i]}`).join('\n')}`,
+                    `需要种子：${cc.foreground.length === 0 ? '无' : cc.foreground.map((f, i) => `${CropConfigs[f].name}×${parseNumber(cc.cost.seed[i], 0)}`).join('\n')}`,
                     `需要知识：${cc.foreground.length === 0 ? '无' :
                         Object.entries(cc.cost.knoledge).map(([k, v]) =>
                             k === '0' || v === 0 ? '' :
-                            `${FieldConfigs[Number(k) as FieldTypes].innerText}×${v}`
+                            `${FieldConfigs[Number(k) as FieldTypes].innerText}×${parseNumber(v, 0)}`
                         ).filter(s => s !== '').join('\n')}`,
                 ]
             }, false)

@@ -133,7 +133,7 @@ export class Field {
         if (translation.scale > 25) {
             if (this.unlocked) {
                 txt = getFieldConfig(this.moisture)[0].innerText;
-                if (f.crop !== Crops.None) txt += `\n${CropConfigs[f.crop].name}`
+                if (f.crop !== Crops.None) txt += `\n${CropConfigs[f.crop].shortName}`
                 if (f.level !== 0) txt += `\n${f.level}级研究所`
             } else {
                 let m = Field.calcMoney(this);

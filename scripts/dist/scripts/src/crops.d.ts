@@ -14,6 +14,7 @@ export declare enum Crops {
 declare class Crop {
     id: Crops;
     name: string;
+    shortName: string;
     moisture: {
         lo: number;
         mid: number;
@@ -31,7 +32,7 @@ declare class Crop {
         };
     };
     introduction: string;
-    constructor(id: Crops, name: string, moisture: {
+    constructor(id: Crops, name: string, shortName: string, moisture: {
         lo: number;
         mid: number;
         hi: number;
