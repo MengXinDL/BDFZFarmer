@@ -17,8 +17,8 @@ body {
     justify-content: center;
     align-items: center;
     position: absolute;
-    left: 0;
-    top: 0;
+    left: -10px;
+    top: -10px;
     z-index: -1;
 }
 
@@ -33,8 +33,8 @@ body {
     position: absolute;
     display: flex;
     flex-direction: column;
-    left: 0;
-    top: 0;
+    left: -10px;
+    top: -10px;
     z-index: 1;
     background-color: rgba(0, 0, 0, 0.7);
     justify-content: flex-start;
@@ -94,7 +94,7 @@ body {
     margin: 3px;
     transform: translate(-50%, 0);
 }
-div#tip {
+.tip-container {
     position: absolute;
     top: 0;
     left: 50vw;

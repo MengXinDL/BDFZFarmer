@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { createRoot } from 'react-dom/client';
 import evt from './event';
+import Motion, { motion } from 'framer-motion';
 
 const roots:{
     notice: null | ReturnType<typeof createRoot>;
@@ -20,7 +21,7 @@ function Notice(
 ) {
     let notice = <div className='notice'>
         <div className='notice-title'>
-            <button
+            <motion.button
                 style={{
                     background: 'rgba(0,0,0,0.5)',
                     border: 'none',
@@ -29,16 +30,11 @@ function Notice(
                     aspectRatio: '1/1',
                     fontSize: '20px',
                 }}
-                onMouseOver={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(255,0,0,0.5)';
-                }}
-                onMouseOut={(e) => {
-                    e.currentTarget.style.backgroundColor = 'rgba(0,0,0,0.5)';
-                }}
+                whileHover={{background: 'rgba(255,0,0,0.5)'}}
                 onClick={(e) => {
                     evt.emit('notice-close');
                 }}
-            >×</button>
+            >×</motion.button>
             <span style={{
                 color: 'white',
                 textAlign: 'center',
@@ -84,34 +80,56 @@ export function showNotice(title: string | React.JSX.Element, contents:{
     });
 }
 
-let tips: {
-    content: string,
-    opacity: number
-}[] = [];
-setInterval(() => {
-    roots.tip = roots.tip || createRoot(document.getElementById('tip') as HTMLElement);
-    let del: {
-        content: string,
-        opacity: number
-    }[] = [];
-    tips.forEach($ => {
-        $.opacity -= 0.05;
-        if($.opacity < 0)del.push($);
-    })
-    tips = tips.filter($ => !del.includes($));
-    roots.tip.render(
-        <>{
-            tips.map(($, index) => (
-                <span className='tip' key={index} style={{opacity: $.opacity}}>
-                    {$.content}
-                </span>
-            ))
-        }</>
-    );
-}, 20)
-export function showTip(content: string) {
-    tips.push({
-        content,
-        opacity: 3
+function Tip({content}: {content: string}){
+    return <motion.span
+        className='tip'
+        initial={{opacity: 1}}
+        animate={{opacity: 0}}
+        transition={{duration: 1, delay: 2}}
+        onAnimationComplete={() => {
+            evt.emit('tip-close');
+        }}
+    >
+        {content}
+    </motion.span>
+}
+function TipContainer() {
+    const [tips, setTips] = React.useState<{
+        content: string;
+        id: number;
+        time: number;
+    }[]>([]);
+    const [id, updateId] = React.useReducer((state: number) => state + 1, 0);
+    const controler = Motion.useAnimation();
+
+    React.useEffect(() => {
+        let e = evt.on('tip', (content: string) => {
+            setTips((tips) => {
+                tips.push({ content, id, time: Date.now() });
+                return [...tips];
+            });
+            updateId();
+        });
+        return () => {
+            evt.remove(e.id);
+        }
     });
+    React.useEffect(() => {
+        let e = evt.on('tip-close', () => {setTips(tips => tips.filter(t => t.time > Date.now() - 3000));});
+        return () => {
+            evt.remove(e.id);
+        }
+    })
+    return (
+        <motion.div className='tip-container' animate={controler}>
+            {tips.map(({ content, id }) => <Tip content={content} key={id} />)}
+        </motion.div>
+    );
+}
+addEventListener('load', () => {
+    roots.tip = roots.tip || createRoot(document.getElementById('tip') as HTMLElement);
+    roots.tip.render(<TipContainer />);
+})
+export function showTip(content: string) {
+    evt.emit('tip', content);
 }

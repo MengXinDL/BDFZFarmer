@@ -44,5 +44,6 @@ module.exports = {
         'react': 'React',
         'react-dom/client': 'ReactDOM',
         'lz-string': 'LZString',
+        'framer-motion': 'Motion'
     },
 }
