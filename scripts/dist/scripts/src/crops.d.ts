@@ -9,7 +9,12 @@ export declare enum Crops {
     WildDoubleWheat = 6,
     Aegilops = 7,
     DoubleWheat = 8,
-    Wheat = 9
+    Wheat = 9,
+    GrassRice = 10,
+    WildRice = 11,
+    IndicaRice = 12,
+    JaponicaRice = 13,
+    JIRice = 14
 }
 declare class Crop {
     id: Crops;
@@ -31,12 +36,13 @@ declare class Crop {
             [key in FieldTypes]: number;
         };
     };
+    posibility: number;
     introduction: string;
     constructor(id: Crops, name: string, shortName: string, moisture: {
         lo: number;
         mid: number;
         hi: number;
-    }, basicOutput: number, seedOutput: number, rarity: CropRarity, foreground: Crops[], cost: [number[], [number, number, number, number, number, number]] | null, introduction: string);
+    }, basicOutput: number, seedOutput: number, rarity: CropRarity, foreground: Crops[], cost: [number[], [number, number, number, number, number, number]] | null, posibility: number, introduction: string);
 }
 export declare enum CropRarity {
     Common = 0,

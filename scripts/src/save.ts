@@ -225,9 +225,6 @@ export function initSaveData(saveData: object) {
     }
 
     function v1_3_() {
-        if (!("version" in saveData)) return;
-        let v = saveData["version"];
-        if (!(typeof v === "string") || !(v.startsWith("1.3."))) return;
         if(!("seeds" in saveData)) return;
         let value = d["seeds"] as {type: Crops, count: number, mode: SeedMode}[];
         value.forEach((s, i) => {

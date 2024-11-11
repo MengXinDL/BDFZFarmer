@@ -280,10 +280,14 @@ addEventListener('load', () => {
                 k.count -= cc.cost.seed[i];
             }
         })
-        save.enableCrops.push(id);
-        save.seeds.push({ type: id, count: 1, mode: SeedMode.储存 });
-        nextSeeds.splice(nextSeeds.findIndex(ns => ns.crop === id), 1);
-        console.log(nextSeeds);
+        if (Math.random() < cc.posibility) {
+            save.enableCrops.push(id);
+            save.seeds.push({ type: id, count: 1, mode: SeedMode.储存 });
+            nextSeeds.splice(nextSeeds.findIndex(ns => ns.crop === id), 1);
+            showTip('培育成功！');
+        } else {
+            showTip('培育失败！');
+        }
         updateSeeds();
 
     })
@@ -316,6 +320,7 @@ function NewSeed({ type, croptype }: { type: 0 | 1 | 2, croptype: Crops }) { // 
                             k === '0' || v === 0 ? '' :
                             `${FieldConfigs[Number(k) as FieldTypes].innerText}×${parseNumber(v, 0)}`
                         ).filter(s => s !== '').join('\n')}`,
+                    `培育成功率：${cc.posibility * 100}%`
                 ]
             }, false)
         }
