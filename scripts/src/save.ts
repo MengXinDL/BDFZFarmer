@@ -224,9 +224,21 @@ export function initSaveData(saveData: object) {
         };
     }
 
+    function v1_3_() {
+        if (!("version" in saveData)) return;
+        let v = saveData["version"];
+        if (!(typeof v === "string") || !(v.startsWith("1.3."))) return;
+        if(!("seeds" in saveData)) return;
+        let value = d["seeds"] as {type: Crops, count: number, mode: SeedMode}[];
+        value.forEach((s, i) => {
+            if(s.type === Crops.GoldenCockscomb && s.count > 1) s.count = 1;
+        })
+    }
+
     v0_(); // to support version 0.*.* Array like data
     v1_0_(); // to clear Crockscombs from version 1.0.* 
     v1_1_0(); // to fix moisture
+    v1_3_(); // to fix golden cockscombs
     correctField(); // to initialize uninitialized fields config
     correctSeeds(); // to initialize uninitialized seeds
     correctKnoledge(); // to initialize uninitialized knoledge
