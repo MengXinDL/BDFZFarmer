@@ -108,10 +108,7 @@ interact.click = (x: number, y: number) => {
     let now = Date.now();
     if (!f.unlocked) {
         buyField();
-    } else if (
-        now - interact.pressTime > 500 ||
-        now - interact.touchTime > 500
-    ) {
+    } else if (currentMode === Mode.查看) {
         showNotice('区块信息', {
             text: Field.getFieldInformation(f),
         }, false)
@@ -171,13 +168,14 @@ addEventListener('load', () => {
 })
 enum Mode {
     种植,
-    建造
+    建造,
+    查看
 }
 let currentMode = Mode.种植;
 function ModeSelector() {
     let [mode, setMode] = useState(Mode.种植);
     function switchMode() {
-        currentMode = 1 - currentMode;
+        currentMode = (currentMode + 1) % 3;
         setMode(currentMode);
     }
     return (<button onClick={switchMode}>当前模式：{Mode[mode]}</button>)
@@ -297,10 +295,7 @@ function NewSeed({ type, croptype }: { type: 0 | 1 | 2, croptype: Crops }) { // 
     let touchTime = React.useRef(0);
     let callback = React.useCallback(() => {
         console.log(Date.now() - touchTime.current, Date.now() - pressTime.current);
-        if (
-            Date.now() - touchTime.current < 500 &&
-            Date.now() - pressTime.current < 500
-        ) {
+        if (currentMode !== Mode.查看) {
             switch (type) {
                 case 0:
                     showTip('前置植物未全部完成');
@@ -331,12 +326,6 @@ function NewSeed({ type, croptype }: { type: 0 | 1 | 2, croptype: Crops }) { // 
             backgroundColor: ['#f007', '#ff07', '#fff7'][type],
             borderColor: rc.color,
         }}
-            onMouseDown={() => {
-                pressTime.current = Date.now();
-            }}
-            onTouchStart={() => {
-                touchTime.current = Date.now();
-            }}
             onMouseUp={callback}
         >{cc.name}</span>
     )
