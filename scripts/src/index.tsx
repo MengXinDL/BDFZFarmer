@@ -110,7 +110,7 @@ interact.click = (x: number, y: number) => {
         buyField();
     } else if (
         now - interact.pressTime > 500 ||
-        (now - interact.touchTime > 500 && now - interact.pressTime < 5)
+        now - interact.touchTime > 500
     ) {
         showNotice('区块信息', {
             text: Field.getFieldInformation(f),
@@ -293,9 +293,14 @@ addEventListener('load', () => {
 function NewSeed({ type, croptype }: { type: 0 | 1 | 2, croptype: Crops }) { // 0: 前置植物未全部完成 1: 前置植物全部完成，但没有足够种子或知识 2: 可以解锁
     let cc = CropConfigs[croptype];
     let rc = CropRarityConfigs[cc.rarity];
-    let time = React.useRef(0);
+    let pressTime = React.useRef(0);
+    let touchTime = React.useRef(0);
     let callback = React.useCallback(() => {
-        if (Date.now() - time.current < 500) {
+        console.log(Date.now() - touchTime.current, Date.now() - pressTime.current);
+        if (
+            Date.now() - touchTime.current < 500 &&
+            Date.now() - pressTime.current < 500
+        ) {
             switch (type) {
                 case 0:
                     showTip('前置植物未全部完成');
@@ -327,7 +332,10 @@ function NewSeed({ type, croptype }: { type: 0 | 1 | 2, croptype: Crops }) { // 
             borderColor: rc.color,
         }}
             onMouseDown={() => {
-                time.current = Date.now();
+                pressTime.current = Date.now();
+            }}
+            onTouchStart={() => {
+                touchTime.current = Date.now();
             }}
             onMouseUp={callback}
         >{cc.name}</span>
