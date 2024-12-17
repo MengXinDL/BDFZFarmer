@@ -28,7 +28,7 @@ body {
 }
 
 .control-container {
-    width: 200px;
+    width: 225px;
     height: 100vh;
     position: absolute;
     display: flex;
@@ -72,6 +72,7 @@ body {
     display: flex;
     flex-direction: column;
 }
+
 .notice-title {
     justify-content: space-between;
     color: rgba(0, 0, 0, 1);
@@ -80,6 +81,7 @@ body {
     display: flex;
     width: 100%;
 }
+
 .notice-content {
     flex: 1;
     width: calc(100% - 20px);
@@ -101,6 +103,7 @@ body {
     flex-direction: row;
     white-space: nowrap;
 }
+
 .tip-container {
     position: absolute;
     top: 0;
