@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>作物种植模拟</title>
+  <link rel="icon" href="/favicon_32x32.ico" type="image/x-icon" sizes="32x32">
+  <style>
+    .btn {
+      background-color: #dfcc00;
+      border: none;
+      color: white;
+      padding: 15px 32px;
+      text-align: center;
+      text-decoration: none;
+      display: inline-block;
+      font-size: 16px;
+    }
+  </style>
+  <script type="text/javascript">
+    const Locations = {
+      0: {
+        localHref: '/v/0.2.12',
+        severHref: 'https://v0.bdfzfarmer.top'
+      },
+      1: {
+        localHref: '/v/1.4.0',
+        severHref: 'https://v1.bdfzfarmer.top'
+      },
+      2: {
+        localHref: '/v2',
+        severHref: 'https://v2.bdfzfarmer.top'
+      }
+    }
+    function loadVersion(version) {
+      let href = window.location.href;
+      if (href.endsWith('index.html')) {
+        href = href.substring(0, href.length - 10);
+      }
+      if (href.endsWith('/')) {
+        href = href.substring(0, href.length - 1);
+      }
+      if (!href.includes('bdfzfarmer')) {
+        href = href + Locations[version].localHref;
+      } else {
+        href = Locations[version].severHref;
+      }
+      window.location.href = href;;
+      return href;
+    }
+  </script>
+</head>
+
+<body>
+  <h1 style="left: 50%; position: absolute; transform: translate(-50%, 0);">作物种植模拟</h1>
+  <div style="top: 50%; left: 50%; position: absolute; transform: translate(-50%, -50%);">
+    <button class="btn" onclick="console.log(loadVersion(0))">v0</button>
+    <button class="btn" onclick="console.log(loadVersion(1))">v1</button>
+    <button class="btn" onclick="alert('v2 未开放')">v2</button>
+  </div>
+
+  <a href="https://beian.miit.gov.cn/"
+    style="color: rgb(0, 0, 0); bottom: 0%; position: absolute; left: 50%; transform: translate(-50%, 0);">京ICP备2024100256号-1</a>
+</body>
+
+</html>
