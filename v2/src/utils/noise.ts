@@ -14,14 +14,17 @@ const noise = {
   temperature: createNoise2D(seeds.temperature)
 };
 
-const moistureScale = 0.0611278593666667;
-const temperatureScale = 0.00552341122333333;
+const moistureScale = 0.0611278593659617;
+const temperatureScale = 0.00552341122384621;
+
+// const moistureScale = 0.04;
+// const temperatureScale = 0.04;
 
 export function getPosMoisture(x: number, y: number): number {
   return (noise.moisture(x * moistureScale, y * moistureScale) + 1) / 2;
 }
 export function getPosTemperature(x: number, y: number): number {
-  return noise.temperature(x * temperatureScale, y * temperatureScale) * 3 + 2;
+  return noise.temperature(x * temperatureScale, y * temperatureScale) * 2.5 + 1.5;
 }
 
 export function setseed(seed: number) {

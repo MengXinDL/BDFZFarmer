@@ -1,11 +1,9 @@
 <script setup lang="ts">
-import Land from './Land.vue';
+import Block from './Block.vue';
 
 import { TresCanvas } from '@tresjs/core';
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted, watch } from 'vue';
 import * as THREE from 'three';
-import { getLandTypeFromPos } from '@/utils/land';
-import { LandTypes } from '@/types/land';
 
 
 const [h, w] = [window.innerHeight, window.innerWidth];
@@ -14,59 +12,12 @@ const cameraRef = ref();
 const isDragging = ref(false);
 const lastMousePos = ref({ x: 0, y: 0 });
 const cameraPosition = ref(new THREE.Vector3(5, 5, 5));
-const id = ref(0); // 用于刷新页面
+const sceneRef = ref();
+
+const blockRadius = 2;
 
 // 相机方向向量
 
-
-// 计算可见范围
-const visibleTiles = computed(() => {
-  if (!cameraRef.value) return { minX: -5, maxX: 5, minZ: -5, maxZ: 5 };
-  
-  const camera = cameraRef.value;
-  const center = (camera.position as THREE.Vector3).clone().add({ x: -5, y: -5, z: -5});
-  const viewRadius = 5;
-  
-  // return {
-  //   minX: minX - buffer,
-  //   maxX: maxX + buffer,
-  //   minZ: minZ - buffer,
-  //   maxZ: maxZ + buffer
-  // };
-  return {
-    minX: Math.floor(center.x - viewRadius),
-    maxX: Math.ceil(center.x + viewRadius),
-    minZ: Math.floor(center.z - viewRadius),
-    maxZ: Math.ceil(center.z + viewRadius)
-  };
-});
-function range(start: number, end: number) {
-  return Array.from({ length: end - start }, (_, i) => start + i);
-}
-
-const uniqueLands = computed(() => {
-  const lands: {
-    key: string;
-    position: [number, number];
-    landType: LandTypes;
-    distance: number;
-  }[] = [];
-  
-  for (let x = visibleTiles.value.minX; x <= visibleTiles.value.maxX; x++) {
-    for (let z = visibleTiles.value.minZ; z <= visibleTiles.value.maxZ; z++) {
-      const dis = Math.hypot(x - cameraPosition.value.x + 5, z - cameraPosition.value.z + 5);
-      const key = `${id.value}-${x},${z}`;
-      lands.push({
-        key,
-        position: [x, z],
-        landType: getLandTypeFromPos(x, z),
-        distance: dis
-      });
-    }
-  }
-  console.log(lands.map(land => land.key));
-  return lands;
-});
 
 function onPointerDown(event: MouseEvent) {
   isDragging.value = true;
@@ -79,9 +30,6 @@ function onPointerUp() {
 
 function onPointerMove(event: MouseEvent) {
   if (!isDragging.value || !cameraRef.value) return;
-
-  id.value++;id.value %= 2147483647;
-  console.log(id.value);
 
   const scale = 0.01;
   const deltaX = event.movementX * scale;
@@ -97,7 +45,20 @@ function onPointerMove(event: MouseEvent) {
   lastMousePos.value = { x: event.clientX, y: event.clientY };
 }
 
+let blocks = ref<[number, number][]>([]);
 
+function updateBlock(){
+  const pos = cameraPosition.value;
+  let newBlock: [number, number][] = [];
+  for(let i = -blockRadius; i <= blockRadius; i++)
+    for(let j = -blockRadius; j <= blockRadius; j++)
+      if(Math.hypot(i, j) <= blockRadius)
+        newBlock.push([i + Math.round(pos.x / 8) - 1, j + Math.round(pos.z / 8) - 1]);
+  blocks.value = newBlock;
+  console.log(newBlock[0], pos.x, pos.z);
+}
+updateBlock();
+watch(cameraPosition, updateBlock, {deep: true})
 </script> 
 
 <template>
@@ -107,6 +68,7 @@ function onPointerMove(event: MouseEvent) {
     @pointermove="onPointerMove"
     @pointerup="onPointerUp"
     @pointerleave="onPointerUp"
+    ref = "sceneRef"
   >
   <TresOrthographicCamera
     ref="cameraRef"
@@ -122,14 +84,15 @@ function onPointerMove(event: MouseEvent) {
       :intensity="2"
       :position="[6, 8, 9]"
     />
-    <template v-for="land in uniqueLands" :key="land.key">
-      <Land
-        v-if="land.distance < 5 && land.key.startsWith(id.toString())"
-        :position="land.position"
-        :land-type="land.landType"
-        :distance="land.distance"
-      />
-    </template>
+    <Block v-for="block in blocks" :pos="block" :key="blocks[0].toString()"/>
+    <!-- <template v-for="i in 5">
+      <template v-for="j in 6">
+        <Land
+          :position="[i - 2, j - 3]"
+          :land-type="getLandTypeFromValues(j - 2, (i - 1) / 5)"
+        />
+      </template> -->
+    <!-- </template> -->
   </TresCanvas>
 </template>
 

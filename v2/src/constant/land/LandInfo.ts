@@ -62,32 +62,6 @@ export const LAND_INFOS: {
     description: '寒带沼泽，天气寒冷，土地泥泞，可以种植一些耐寒的喜水作物',
   },
 
-  [LandTypes.COOL_ARID]: {
-    color: 0x74705d,
-    name: '砾石地',
-    description: '砾石地，凉爽干燥，土地坚硬，可以种植一些杂草，和一些耐寒的作物',
-  },
-  [LandTypes.COOL_DRY]: {
-    color: 0xcfa21c,
-    name: '黄土地',
-    description: '黄土地，凉爽干燥，土地较干燥，可以种植一些耐旱的作物',
-  },
-  [LandTypes.COOL_NORMAL]: {
-    color: 0xb06e00,
-    name: '褐土地',
-    description: '褐土地，天气凉爽，土地适宜，适合种植多种作物',
-  },
-  [LandTypes.COOL_WET]: {
-    color: 0xab8612,
-    name: '湿地',
-    description: '湿地，天气凉爽，土地湿润，适合种植多种作物',
-  },
-  [LandTypes.COOL_FLOODED]: {
-    color: 0x858000,
-    name: '泽地',
-    description: '泽地，天气凉爽，土地泥泞，适合种植多种喜水作物',
-  },
-
   [LandTypes.WARM_ARID]: {
     color: 0xc4b570,
     name: '砂砾地',
@@ -187,8 +161,7 @@ export const TEMPERATURE_RANGE: {
 
   [Temperatures.FROZEN]: [-1, 0],
   [Temperatures.COLD]: [0, 1],
-  [Temperatures.COOL]: [1, 2],
-  [Temperatures.WARM]: [2, 3],
-  [Temperatures.HOT]: [3, 4],
-  [Temperatures.BURNING]: [4, 5],
+  [Temperatures.WARM]: [1, 2],
+  [Temperatures.HOT]: [2, 3],
+  [Temperatures.BURNING]: [3, 4],
 }

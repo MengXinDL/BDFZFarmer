@@ -2,10 +2,9 @@ export enum Temperatures {
   NONE = 0,
   FROZEN = 1 << 0,        // 冰冻 (极寒)
   COLD = 1 << 1,          // 寒冷 (寒冷)
-  COOL = 1 << 2,          // 凉爽 (温和)
-  WARM = 1 << 3,          // 温暖 (温暖)
-  HOT = 1 << 4,           // 炎热 (炎热)
-  BURNING = 1 << 5,       // 灼热 (极热)
+  WARM = 1 << 2,          // 温暖 (温暖)
+  HOT = 1 << 3,           // 炎热 (炎热)
+  BURNING = 1 << 4,       // 灼热 (极热)
 }
 
 export enum Moistures {
@@ -16,7 +15,6 @@ export enum Moistures {
   WET = 1 << 3,           // 潮湿 (湿润)
   FLOODED = 1 << 4,       // 水浸 (湿润)
 }
-
 
 export enum LandTypes {
   NONE = 0,
@@ -35,33 +33,26 @@ export enum LandTypes {
   COLD_WET = (1 << 17) | 8,          // 泥泞地
   COLD_FLOODED = (1 << 17) | 16,     // 寒带沼泽
 
-  // 凉爽地带 (COOL)
-  COOL_ARID = (1 << 18) | 1,         // 砾石地
-  COOL_DRY = (1 << 18) | 2,          // 黄土地
-  COOL_NORMAL = (1 << 18) | 4,       // 褐土地
-  COOL_WET = (1 << 18) | 8,          // 湿地
-  COOL_FLOODED = (1 << 18) | 16,     // 泽地
-
   // 温暖地带 (WARM)
-  WARM_ARID = (1 << 19) | 1,         // 砂砾地
-  WARM_DRY = (1 << 19) | 2,          // 黄土高地
-  WARM_NORMAL = (1 << 19) | 4,       // 红土地
-  WARM_WET = (1 << 19) | 8,          // 沼泽地
-  WARM_FLOODED = (1 << 19) | 16,     // 泥滩
+  WARM_ARID = (1 << 18) | 1,         // 砂砾地
+  WARM_DRY = (1 << 18) | 2,          // 黄土高地
+  WARM_NORMAL = (1 << 18) | 4,       // 红土地
+  WARM_WET = (1 << 18) | 8,          // 沼泽地
+  WARM_FLOODED = (1 << 18) | 16,     // 泥滩
 
   // 炎热地带 (HOT)
-  HOT_ARID = (1 << 20) | 1,          // 沙漠
-  HOT_DRY = (1 << 20) | 2,           // 戈壁
-  HOT_NORMAL = (1 << 20) | 4,        // 盐碱地
-  HOT_WET = (1 << 20) | 8,           // 泥沼
-  HOT_FLOODED = (1 << 20) | 16,      // 沼泽
+  HOT_ARID = (1 << 19) | 1,          // 沙漠
+  HOT_DRY = (1 << 19) | 2,           // 戈壁
+  HOT_NORMAL = (1 << 19) | 4,        // 盐碱地
+  HOT_WET = (1 << 19) | 8,           // 泥沼
+  HOT_FLOODED = (1 << 19) | 16,      // 湖泊
 
   // 灼热地带 (BURNING)
-  BURNING_ARID = (1 << 21) | 1,      // 熔岩地
-  BURNING_DRY = (1 << 21) | 2,       // 火山灰地
-  BURNING_NORMAL = (1 << 21) | 4,    // 硫磺地
-  BURNING_WET = (1 << 21) | 8,       // 热泉地
-  BURNING_FLOODED = (1 << 21) | 16   // 地热泉
+  BURNING_ARID = (1 << 20) | 1,      // 熔岩地
+  BURNING_DRY = (1 << 20) | 2,       // 火山灰地
+  BURNING_NORMAL = (1 << 20) | 4,    // 硫磺地
+  BURNING_WET = (1 << 20) | 8,       // 热泉地
+  BURNING_FLOODED = (1 << 20) | 16   // 地热泉
 }
 
 export interface ILand {
